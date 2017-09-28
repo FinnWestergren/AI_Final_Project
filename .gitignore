@@ -167,3 +167,4 @@ srcFiles/
 *.TIFF
 *.png
 *.PNG
+*.classpath
