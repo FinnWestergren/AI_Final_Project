@@ -166,6 +166,5 @@ srcFiles/
 *.tiff
 *.TIFF
 *.png
-*.PNG
-*.classpath
-JavaFiles/Game/.classpath
+
+>>>>>>> parent of d4c1e04... gitignore for classpath

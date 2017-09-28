@@ -1,6 +1,5 @@
-import processing.core.PApplet;
 
-public class Main extends PApplet {
+public class Main {
 	/*
 	 * Sjoerd and Finn Fall 2017 bby!
 	 *
@@ -16,8 +15,10 @@ public class Main extends PApplet {
 	public static Player player1;
 	public static Player player2;
 	
-	public void runGame(){
-		//handles all the behind the scenes, including AI and board updates
+	public static void main(String[] args) {
+		// im thinkin arg 1 is board Size, args 2 and 3 are player types respectively, 
+		// and args 4 and 5 are player names respectively (if human). What do you think about that sjoerdguy?
+		
 		int boardSize = Integer.parseInt(args[0]);
 		theBoard = new Board(boardSize);
 		player1 = new Player(boardSize/2, 0, 1, "");
