@@ -1,4 +1,3 @@
-
 public class Board {
 
 	public int boardSize; // size of one side
@@ -61,7 +60,6 @@ public class Board {
 			}
 			out += "\n";
 		}
-		
 		return out;
 	}
 }
