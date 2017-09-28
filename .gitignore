@@ -166,5 +166,9 @@ srcFiles/
 *.tiff
 *.TIFF
 *.png
+<<<<<<< HEAD
 
+>>>>>>> parent of d4c1e04... gitignore for classpath
+=======
+*.PNG
 >>>>>>> parent of d4c1e04... gitignore for classpath
