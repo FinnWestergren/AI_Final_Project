@@ -1,43 +1,67 @@
 import processing.core.PApplet;
 
-public class Main extends PApplet{
+public class Main extends PApplet {
 	/*
 	 * Sjoerd and Finn Fall 2017 bby!
 	 *
-	 * This program contains the game Quoridor, 
-	 * but contains no graphical elements. 
-	 * Only information about the board, the players, 
-	 * and 2 AI Agents.
+	 * This program plays the game Quoridor. The classes
+	 * are separated in a manner that allows the best dynamic sizing, 
+	 * testing, and debugging. 
 	 * 
-	 * The main class contains an instance of the board and an instance of each player
+	 * The graphics are all controlled by a single class, GameUI.
+	 * It is fed a string by main from Board.toString
+	 * 
+	 * TODO finish the auto-generated methods in board, devise a heuristic
+	 * 
+	 * TODO design alpha beta agent
+	 * 
+	 * TODO make a text game tic tac toe that implements BoardFeatures
+	 * 
+	 * thats a good start
 	 */
 	
-	public static Board theBoard;
-	public static Player player1;
-	public static Player player2;
 	
+	/*
+	 * The main class contains an instance of the board and an instance of each
+	 * player
+	 */
+
+	public Board theBoard;
+	public Player[] player = { new Player(), new Player() };
+	public GameUI gameUI;
+	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = 70;
+
 	public void setup() {
-		size(700,700);
-		background(255,255,0);
-		fill(0);
-		text("hey sjoerd guy", 200, 400);
+
+		size(windowSize + 2 * margin, windowSize);
+		background(255, 155, 111);
+		gameUI = new GameUI(cellSize, boardSize);
+		initGame();
+		initGraphics();
 	}
-	
-	public void runGame() {
-		//This does all the backgrounds stuff, including board updates and AI
-		
-		int boardSize = 9;
+
+	public void draw() {
+		pushMatrix();
+		float cellMargin = cellSize * 0.1f;
+		translate(cellMargin + 150, cellMargin);
+		gameUI.draw(this);
+		popMatrix();
+
+	}
+
+	public void initGame() {
+
 		theBoard = new Board(boardSize);
-		player1 = new Player(boardSize/2, 0, 1, "");
-		player2 = new Player(boardSize/2, boardSize - 1, 2, "greg");
-		theBoard.init(player1, player2);
-		printBoard();
+		player[0] = new Player("shrimpo 2, the squeakquel");
+		player[1] = new Player("greg3001");
+		theBoard.init();
+		// testing addWall method
+		theBoard.addWall(2, 2, Orientation.VERTICAL, 1);
+
 	}
-	
-	public static void printBoard() {
-		String out = theBoard.toString()
-				+ player1.toString()+ "\n" +
-				player2.toString();
-		System.out.println(out);
+
+	public void initGraphics() {
+		gameUI.update(theBoard.toString(), theBoard.pieces[0], theBoard.pieces[1]);
 	}
+
 }

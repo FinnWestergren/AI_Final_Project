@@ -1,8 +1,10 @@
-public class Board {
+public class Board implements BoardFeatures {
 
 	public int boardSize; // size of one side
 	public Cell[][] cellArray;
 	public Junction[][] junctArray;
+	public GamePiece[] pieces = { new GamePiece(), new GamePiece() };
+	public int[] wallsLeft = { 10, 10 };
 
 	public Board(int boardSize) {
 		this.boardSize = boardSize;
@@ -10,56 +12,100 @@ public class Board {
 		junctArray = new Junction[boardSize - 1][boardSize - 1];
 	}
 
-	public void init(Player p1, Player p2) {
-		for (int i = 0; i < boardSize; i++) {
-			for (int j = 0; j < boardSize; j++) {
+	
+	//initializes a board...
+	//TODO create another init with a string param and player position params 
+	//for testing purposes  
+	public void init() {
+		for (int j = 0; j < boardSize; j++) {
+			for (int i = 0; i < boardSize; i++) {
 
 				// init cells
 				cellArray[i][j] = new Cell();
 
 				// init junctions
-				if (i < boardSize - 1 && j < boardSize - 1)
+				if (j < boardSize - 1 && i < boardSize - 1)
 					junctArray[i][j] = new Junction();
+
 			}
 		}
-		setOccupiedCells(p1, p2);
+		movePiece(null, 4, 0, 0);
+		movePiece(null, 4, 8, 1);
 	}
 
-	//for use in update and init
-	public void setOccupiedCells(Player p1, Player p2) {
-		cellArray[p1.column][p1.row].occupied = true;
-		cellArray[p2.column][p2.row].occupied = true;
+	// for use in update and init
+	// updates which cells are occupied
+	public void movePiece(Cell from, int x, int y, int pID) {
+		if(from != null) from.occupied = false;
+		cellArray[x][y].occupied = true;
+		pieces[pID].setCol(x);
+		pieces[pID].setRow(y);
 	}
 
-	
-	//for use with an external program that will process graphics
+	public void addWall(int x, int y, Orientation O, int pID) {
+		wallsLeft[pID]--;
+		junctArray[x][y].setOrientation(O);
+		if(O == Orientation.HORIZONTAL) {
+			if(x < boardSize - 1)	junctArray[x+1][y].horizBlocked = true;
+			if(x > 0)				junctArray[x-1][y].horizBlocked = true;
+		}
+		
+		if(O == Orientation.VERTICAL) {
+			if(y < boardSize - 1) 	junctArray[x][y+1].vertBlocked = true;
+			if(y > 0) 				junctArray[x][y-1].vertBlocked = true;
+		}
+	}
+
+	// for use with GameUI that will process graphics
 	public String toString() {
 		
-		/*
-		 * should print something like this
-			9
-			O O O O O O O O 
-			O O O O O O O O
-			O O O O O O O O
-			O O O V H O O O
-			O O O O O O O O
-			O O O O O O O O
-			O O O O O O O O
-			O O O O O O O O 
-			
-			p1: Name = greg2000, row = 4, col = 0
-			p2: Name = shrimpy, row = 4, col = 8
-		*/
-		
-		String out = boardSize + "\n";
+		String out = "";
 
-		for (int i = 0; i < boardSize - 1; i++) {
-			for (int j = 0; j < boardSize - 1; j++) {
-				out += junctArray[i][j].getOrientation().toString().substring(0,1); 
+		for (int j = 0; j < boardSize - 1; j++) {
+			for (int i = 0; i < boardSize - 1; i++) {
+				out += junctArray[i][j].getOrientation().toString().substring(0, 1);
 				out += " ";
 			}
 			out += "\n";
 		}
 		return out;
 	}
+
+	@Override
+	public Move[] getPossibleMoves(int pID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void performMove(Move m) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void undoMove(Move m) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public double getBoardValue(int pID) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean checkPossible(Move m) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean checkGameOver() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	
 }

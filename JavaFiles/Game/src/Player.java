@@ -1,20 +1,22 @@
 
 public class Player {
-	
-	public int row, column, playerNumber;
+
+	/*
+	 * this class should be extended by alpha beta, reinforcement learning, and
+	 * human players I'm tryna keep this extra simple so we can reimplement and test
+	 * on tic tac toe (which we shouldn't need a UI for) 
+	 * 
+	 * you know, because of the implication
+	 */
+
 	public String name;
-	
-	//row, col, playerNumber, name
-	public Player(int row, int column, int playerNumber, String name) {
-		super();
-		this.row = row;
-		this.column = column;
-		this.playerNumber = playerNumber;
+
+	public Player() {
+		name = null;
+	}
+
+	public Player(String name) {
 		this.name = name;
 	}
-	
-	public String toString() {
-		return "p" + playerNumber + ": " + "Name = " + name + ", row = " + row + ", col = " + column; 
-	}
-	
+
 }
