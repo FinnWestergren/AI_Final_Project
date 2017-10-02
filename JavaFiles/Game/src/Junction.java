@@ -21,7 +21,7 @@ public class Junction {
 		this.orientation = orientation;
 		occupied = (orientation != Orientation.OPEN);
 	}
-	
+
 	public boolean checkPossible(Orientation O) {
 		if(occupied) return false;
 		if(O == Orientation.VERTICAL) return vertBlocked;
