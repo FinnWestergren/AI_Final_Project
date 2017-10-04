@@ -1,4 +1,4 @@
-
+//not done as of this yet present moment in the time of our lives
 public class PieceMove extends Move{
 
 	private Direction direction;

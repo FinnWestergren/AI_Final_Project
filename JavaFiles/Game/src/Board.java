@@ -3,6 +3,7 @@ public class Board implements BoardFeatures {
 	public int boardSize; // size of one side
 	public Cell[][] cellArray;
 	public Junction[][] junctArray;
+	public Move[] allJuncMoves;
 	public GamePiece[] pieces = { new GamePiece(), new GamePiece() };
 	public int[] wallsLeft = { 10, 10 };
 
@@ -16,6 +17,7 @@ public class Board implements BoardFeatures {
 	//initializes a board...
 	//TODO create another init with a string param and player position params 
 	//for testing purposes  
+	//TODO get all junction moves and init static array
 	public void init() {
 		for (int j = 0; j < boardSize; j++) {
 			for (int i = 0; i < boardSize; i++) {
@@ -71,6 +73,27 @@ public class Board implements BoardFeatures {
 		return out;
 	}
 
+	
+	/*
+	 * Order for methods
+	 * 1 checkPossible
+	 * 		- divide into smaller sub-methods
+	 * 			-check wall move
+	 * 			-check piece move
+	 * 2 create getAllMoves method
+	 * 		-generate 8 piece moves and pass piece moves and static allJunctionMoves
+	 * 3 getPossibleMoves
+	 * 		-iterates through all moves and uses checkPossible
+	 * 3 
+	 * 
+	 */
+	
+	@Override
+	public Move[] getAllMoves(int pID) {
+		//TODO 
+		return null;
+	}
+	
 	@Override
 	public Move[] getPossibleMoves(int pID) {
 		// TODO Auto-generated method stub
@@ -98,6 +121,14 @@ public class Board implements BoardFeatures {
 	@Override
 	public boolean checkPossible(Move m) {
 		// TODO Auto-generated method stub
+		
+		//if m = PieceMove
+		//	check if space in that direction is blocked by a wall
+		//	if not, return true
+		//if m = WallMove
+		//	check if junction is occupied by a wall or is vertBlocked or horizBlocked
+		
+		//if (m.toString().equals(anObject))
 		return false;
 	}
 

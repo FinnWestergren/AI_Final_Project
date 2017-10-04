@@ -126,6 +126,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+.class
 
 #################################
 # OS generated files            #
@@ -158,3 +159,7 @@ srcFiles/
 *.png
 <<<<<<< HEAD
 >>>>>>> parent of d4c1e04... gitignore for classpath
+*.class
+*.glsl
+*.MF
+*.jnilib
