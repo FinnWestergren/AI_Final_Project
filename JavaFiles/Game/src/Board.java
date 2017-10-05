@@ -23,26 +23,26 @@ public class Board implements BoardFeatures {
 
 				// init cells
 				cellArray[i][j] = new Cell();
-
+				
 				// init junctions
 				if (j < boardSize - 1 && i < boardSize - 1)
 					junctArray[i][j] = new Junction();
 
 			}
 		}
-		movePiece(null, 4, 0, 0);
-		movePiece(null, 4, 8, 1);
+		setPiece(4, 0, 0);
+		setPiece(4, 8, 1);
 	}
 
 	// for use in update and init
 	// updates which cells are occupied
-	public void movePiece(Cell from, int x, int y, int pID) {
-		if (from != null)
-			from.occupied = false;
+
+	public void setPiece(int x, int y, int pID) {
 		cellArray[x][y].occupied = true;
 		pieces[pID].setCol(x);
 		pieces[pID].setRow(y);
 	}
+
 
 	public void addWall(int x, int y, Orientation O, int pID) {
 		wallsLeft[pID]--;
@@ -61,6 +61,8 @@ public class Board implements BoardFeatures {
 				junctArray[x][y - 1].vertBlocked = true;
 		}
 	}
+
+
 
 	// for use with GameUI that will process graphics
 	public String toString() {
@@ -85,6 +87,9 @@ public class Board implements BoardFeatures {
 	 * 
 	 */
 
+	
+	
+
 	public Move[] getAllMoves(int pID) {
 		// TODO
 		return null;
@@ -97,20 +102,71 @@ public class Board implements BoardFeatures {
 	}
 
 	@Override
-	public void performMove(Move m) {
+	public void performMove(Move m, int pID) {
 		// TODO Auto-generated method stub
+		if (m instanceof PieceMove) 
+			performPieceMove((PieceMove) m, pID);
+		if (m instanceof WallMove) 
+			performWallMove((WallMove) m, pID);
+	}
+	
+	private void performPieceMove(PieceMove m, int pID) {
+		int x = pieces[pID].getCol();
+		int y = pieces[pID].getRow();
+		
+		if ((m).getDirection() == Direction.UP) {
+			pieces[pID].setCol(x+1);
+			pieces[pID].setRow(y);
+			cellArray[x+1][y].occupied = true;
+		}
+		if ((m).getDirection() == Direction.DOWN) {
+			pieces[pID].setCol(x-1);
+			pieces[pID].setRow(y);
+			cellArray[x-1][y].occupied = true;
+		}
+		if ((m).getDirection() == Direction.LEFT) {
+			pieces[pID].setCol(x);
+			pieces[pID].setRow(y-1);
+			cellArray[x][y-1].occupied = true;
+		}
+		if ((m).getDirection() == Direction.RIGHT) {
+			pieces[pID].setCol(x);
+			pieces[pID].setRow(y+1);
+			cellArray[x][y+1].occupied = true;
+		}
+		
+		cellArray[x][y].occupied = false;
+	}
 
+	private void performWallMove(WallMove m, int pID) {
+		wallsLeft[pID]--;
+		
+		int x = m.getJunctX();
+		int y = m.getJunctY();
+		Orientation O = m.getOrientation();
+		
+		junctArray[x][y].setOrientation(O);
+		if(O == Orientation.HORIZONTAL) {
+			if(x < boardSize - 1)	junctArray[x+1][y].horizBlocked = true;
+			if(x > 0)				junctArray[x-1][y].horizBlocked = true;
+		}
+		
+		if(O == Orientation.VERTICAL) {
+			if(y < boardSize - 1) 	junctArray[x][y+1].vertBlocked = true;
+			if(y > 0) 				junctArray[x][y-1].vertBlocked = true;
+		}
 	}
 
 	@Override
 	public void undoMove(Move m) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public double getBoardValue(int pID) {
 		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 

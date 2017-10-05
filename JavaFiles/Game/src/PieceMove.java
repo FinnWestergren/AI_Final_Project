@@ -8,7 +8,9 @@ public class PieceMove extends Move{
 	}
 	
 	public Direction getDirection() {
-		return direction;
+
+		return this.direction;
+
 	}
 	
 }
