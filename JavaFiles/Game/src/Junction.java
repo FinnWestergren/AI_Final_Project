@@ -28,5 +28,7 @@ public class Junction {
 		if(O == Orientation.HORIZONTAL) return horizBlocked;
 		return true;
 	}
+	
+	
 
 }
