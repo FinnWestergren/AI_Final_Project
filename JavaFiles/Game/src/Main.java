@@ -56,7 +56,9 @@ public class Main extends PApplet {
 		player[1] = new Player("greg3001");
 		theBoard.init();
 		// testing addWall method
+		/*  ---> addWall was replaced with performWallMove a private method used in performMove
 		theBoard.addWall(2, 2, Orientation.VERTICAL, 1);
+		*/
 
 	}
 
