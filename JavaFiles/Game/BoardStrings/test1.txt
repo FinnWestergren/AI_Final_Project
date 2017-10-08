@@ -1,0 +1,10 @@
+4 8 7
+4 0 6
+O O O O O O O O 
+O O O O O O O O 
+O O O O O O O O 
+O O O O O O O O 
+O O O O O O O O 
+H O O O O O O O 
+O H O H V H V H 
+O O O O O O O O
