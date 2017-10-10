@@ -1,7 +1,7 @@
 
 public class Cell {
 	
-	boolean occupied;
+	public boolean occupied = false;
 	
 	public Cell(){
 		

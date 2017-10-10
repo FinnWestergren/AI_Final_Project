@@ -46,36 +46,35 @@ public class Board implements BoardFeatures {
 			wallsLeft[0] = boardScanner.nextInt();
 			int x1 = boardScanner.nextInt();
 			int y1 = boardScanner.nextInt();
-			wallsLeft[1]= boardScanner.nextInt();
-			
-			setPiece(x0,y0,0);
-			setPiece(x1,y1,1);
-			
-			for(int j = 0; j < boardSize-1; j++ )
-			for(int i = 0; i < boardSize-1; i++ ) {
-				String junct = boardScanner.next();
-				//System.out.println(junct);
-				switch(junct) {
-				case "O":
-					junctArray[i][j].setOrientation(Orientation.OPEN);
-					break;
-				case "H":
-					junctArray[i][j].setOrientation(Orientation.HORIZONTAL);
-					break;
-				case "V":
-					junctArray[i][j].setOrientation(Orientation.VERTICAL);
-					break;
-				default:
-					break;
+			wallsLeft[1] = boardScanner.nextInt();
+
+			setPiece(x0, y0, 0);
+			setPiece(x1, y1, 1);
+
+			for (int j = 0; j < boardSize - 1; j++)
+				for (int i = 0; i < boardSize - 1; i++) {
+					String junct = boardScanner.next();
+					// System.out.println(junct);
+					switch (junct) {
+					case "O":
+						junctArray[i][j].setOrientation(Orientation.OPEN);
+						break;
+					case "H":
+						junctArray[i][j].setOrientation(Orientation.HORIZONTAL);
+						break;
+					case "V":
+						junctArray[i][j].setOrientation(Orientation.VERTICAL);
+						break;
+					default:
+						break;
+					}
 				}
-			}
-			
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// for use in update and init
@@ -109,6 +108,8 @@ public class Board implements BoardFeatures {
 	public String toString() {
 
 		String out = "";
+
+		out += wallsLeft[0] + " " + wallsLeft[1] + "\n";
 
 		for (int j = 0; j < boardSize - 1; j++) {
 			for (int i = 0; i < boardSize - 1; i++) {
@@ -275,10 +276,16 @@ public class Board implements BoardFeatures {
 		int x;
 		int y;
 
+		int count = 0;
 		while (true) {
-			// get the next coordinates off the stack
-			CoordinatePair p = searchQueue.dequeue();
-			System.out.println("popped " + p.x + ", " + p.y);
+			CoordinatePair p;
+			// get the next coordinates off the stack if stack has anything left to give
+			if(searchQueue.back != searchQueue.front) p = searchQueue.dequeue();
+			else { //exit if stuck in loop. used for checking if wall placement is legal
+				distSoFar = -1;
+				break;
+			}
+			// System.out.println("popped " + p.x + ", " + p.y);
 			x = p.x;
 			y = p.y;
 			distSoFar = p.dist;
@@ -287,32 +294,35 @@ public class Board implements BoardFeatures {
 				break;
 			pieces[pID].setCol(x);
 			pieces[pID].setRow(y);
-
+			
 			// iterate through all moves from this point
 			for (Direction dir : Direction.values()) {
 				PieceMove m = new PieceMove(dir);
 				// check if move is legal
-				System.out.println(dir);
-
 				if (checkPieceMove(m, pID)) {
-					System.out.println(dir);
 					CoordinatePair moveTo = getCoordinatePairFromMove(m, pID);
-					// check if move has already been looked at
-					if (moveTo.y != goalY) {
-						System.out.println(goalY);
+					// check if next is gameover
+					
+					if (moveTo.y != goalY) {	
+						// check if move has already been looked at
 						if (!searched[moveTo.x][moveTo.y]) {
 							moveTo.dist = distSoFar + 1;
 							searchQueue.enqueue(moveTo);
 							searched[moveTo.x][moveTo.y] = true;
 						}
+						
+						//if goal state found
 					} else {
-						System.out.println(goalY + ", " + moveTo.y + ", " + distSoFar);
 						moveTo.dist = distSoFar + 1;
 						searchQueue.enqueue(moveTo);
 						break;
 					}
-				}
+				} 
 			}
+
+			count++;
+			
+			
 		}
 		pieces[pID].setCol(xStart);
 		pieces[pID].setRow(yStart);
@@ -365,8 +375,15 @@ public class Board implements BoardFeatures {
 		int x = m.getJunctX();
 		int y = m.getJunctY();
 		Orientation o = m.getOrientation();
+		// check if placement physically fits
+		if (junctArray[x][y].checkPossible(o)) {
+			performMove(m, pID);
+			// check if wall placement makes a full block
+			if (manhattanDistance(pID) == -1 || manhattanDistance((pID + 1) % 2) == -1)
+				return false;
+		}
 
-		return (junctArray[x][y].checkPossible(o));
+		return true;
 	}
 
 	@Override
@@ -380,7 +397,7 @@ public class Board implements BoardFeatures {
 
 		int x1 = pieces[pID].getCol();
 		int y1 = pieces[pID].getRow();
-		
+
 		Orientation OrientationInQuestion = Orientation.OPEN;
 
 		int x2 = x1;
@@ -437,19 +454,18 @@ public class Board implements BoardFeatures {
 			return false;
 
 		return (junct1 != OrientationInQuestion && junct2 != OrientationInQuestion);
-		
+
 	}
 
 	public Orientation getJunctionState(int x, int y) {
 		if (x < 0 || x >= boardSize - 1 || y < 0 || y >= boardSize - 1) {
-			
-			System.out.println(x + " ye " + y);
+
+			// System.out.println(x + " ye " + y);
 			return Orientation.OPEN;
 		}
-		System.out.println(junctArray[x][y].getOrientation());
-			return junctArray[x][y].getOrientation();
+		// System.out.println(junctArray[x][y].getOrientation());
+		return junctArray[x][y].getOrientation();
 	}
-	
 
 	// simple struct for listing 2 coordinate ints in one type, for use in BFS. also
 	// contains a distance element;
@@ -472,9 +488,8 @@ public class Board implements BoardFeatures {
 	private class CPQueue {
 
 		private ArrayList<CoordinatePair> stackList = new ArrayList<CoordinatePair>();
-		int back = 0;
-		int front = 0;
-
+		public int front = 0;
+		public int back = 0;
 		public CPQueue() {
 
 		}
@@ -487,7 +502,7 @@ public class Board implements BoardFeatures {
 
 		public CoordinatePair dequeue() {
 
-			System.out.println(front + " " + back);
+			// System.out.println(front + " " + back);
 			CoordinatePair c = stackList.get(front);
 			front++;
 

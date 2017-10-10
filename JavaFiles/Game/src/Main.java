@@ -30,7 +30,7 @@ public class Main extends PApplet {
 	public Player[] player = { new Player(), new Player() };
 	public GameUI gameUI;
 	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = 70;
-	static final String loadBoard = "test1.txt";
+	static final String loadBoard = "horizontal_wall.txt";
 	static final String loadBoardPath= "../BoardStrings/" + loadBoard;
 
 	public void setup() {
@@ -38,17 +38,17 @@ public class Main extends PApplet {
 		background(255, 155, 111);
 		gameUI = new GameUI(cellSize, boardSize);
 		initGame();
-		System.out.println(theBoard.getBoardValue(0));
+		System.out.println(theBoard.manhattanDistance(0));
 		//System.out.println(theBoard.toString());
 		initGraphics();
 	}
 
 	public void draw() {
-		pushMatrix();
-		float cellMargin = cellSize * 0.1f;
-		translate(cellMargin + 150, cellMargin);
+		fill(255,155,111,255);
+		noStroke();
+		rect(-1,-1,width+2,height+1);
 		gameUI.draw(this);
-		popMatrix();
+		
 
 	}
 
