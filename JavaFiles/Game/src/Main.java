@@ -43,6 +43,9 @@ public class Main extends PApplet {
 		noStroke();
 		rect(-1, -1, width + 2, height + 1);
 		gameUI.draw(this);
+		noStroke();
+		fill(255 * currentPlayer,255 * currentPlayer,255 - (currentPlayer *255));
+		ellipse(margin  + (currentPlayer *(windowSize)) - 0.05f*margin, 10,15,15);
 
 	}
 

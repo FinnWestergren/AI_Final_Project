@@ -87,8 +87,9 @@ public class GameUI {
 			p.stroke(0);
 			p.strokeWeight(5);
 			for (int j = wallsLeft[i]; j > 0; j--) {
+				float y = (j < 6)? y1*j: y1 * (j + 1);
 
-				p.line(x1, y1 * j, x2, y1 * j);
+				p.line(x1, y, x2, y);
 			}
 
 			p.popMatrix();
