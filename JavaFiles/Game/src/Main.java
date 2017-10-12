@@ -33,10 +33,8 @@ public class Main extends PApplet {
 	public int currentPlayer = 0;
 
 	public void setup() {
-		
-		
+
 		initGame();
-		System.out.println(theBoard.manhattanDistance(0));
 		updateGraphics();
 	}
 
@@ -45,7 +43,6 @@ public class Main extends PApplet {
 		noStroke();
 		rect(-1, -1, width + 2, height + 1);
 		gameUI.draw(this);
-		
 
 	}
 
@@ -70,21 +67,22 @@ public class Main extends PApplet {
 	}
 
 	public void mousePressed() {
-		System.out.println("yes");
+
 		if (player[currentPlayer] instanceof HumanPlayer) {
 			Move m = gameUI.getHighlightedMove();
 			PerformMove(m);
 		}
 	}
-	
+
 	public void keyPressed() {
-		
-		if(key != CODED) return;
-		
+
+		if (key != CODED)
+			return;
+
 		if (player[currentPlayer] instanceof HumanPlayer) {
 			PieceMove m = new PieceMove(Direction.UP);
-			switch(keyCode) {
-			
+			switch (keyCode) {
+
 			case UP:
 				m.setDirection(Direction.UP);
 				break;
@@ -98,22 +96,24 @@ public class Main extends PApplet {
 				m.setDirection(Direction.RIGHT);
 				break;
 			}
-			
+
 			PerformMove(m);
 		}
-		
-		
+
 	}
 
 	private void PerformMove(Move move) {
 		if (move == null)
 			return;
-		System.out.println(move.getClass());
+
 		if (theBoard.checkPossible(move, currentPlayer)) {
-			System.out.println("performing");
+
 			theBoard.performMove(move, currentPlayer);
-			currentPlayer = (currentPlayer + 1) % 2;
+
 			updateGraphics();
+			System.out.println(
+					"Player " + (currentPlayer + 1) + "'s value of board: " + theBoard.getBoardValue(currentPlayer));
+			currentPlayer = (currentPlayer + 1) % 2;
 		}
 	}
 }

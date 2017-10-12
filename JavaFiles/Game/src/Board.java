@@ -12,6 +12,7 @@ public class Board implements BoardFeatures {
 	public GamePiece[] pieces = { new GamePiece(), new GamePiece() };
 	public int[] wallsLeft = { 10, 10 };
 	public static ArrayList<WallMove> allWallMoves = new ArrayList<WallMove>();
+	private boolean ignoreOccupiedFlag; // used when a player is blocking the only path
 
 	public Board(int boardSize) {
 		this.boardSize = boardSize;
@@ -54,7 +55,7 @@ public class Board implements BoardFeatures {
 			for (int j = 0; j < boardSize - 1; j++)
 				for (int i = 0; i < boardSize - 1; i++) {
 					String junct = boardScanner.next();
-					// System.out.println(junct);
+					// //System.out.println(junct);
 					switch (junct) {
 					case "O":
 						junctArray[i][j].setOrientation(Orientation.OPEN);
@@ -69,7 +70,7 @@ public class Board implements BoardFeatures {
 						break;
 					}
 				}
-
+			boardScanner.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -255,16 +256,23 @@ public class Board implements BoardFeatures {
 	}
 
 	@Override
-	public double getBoardValue(int pID) {
+	public int getBoardValue(int pID) {
 		// decide heuristic here. for now just this :
-		// self manhattan distance - enemy manhattan distance
-		// alphabeta should be trying to minimize this value
+		//  enemy manhattan distance - self manhattan
+		// alphabeta should be trying to maximize this value
+		
+		// if the state is a game over state, return arbitrarily large/small values
 
+		if(pieces[pID].getRow() == -1 || pieces[pID].getRow() == boardSize) return Integer.MAX_VALUE;
+		if(pieces[(pID + 1) % 2].getRow() == -1 || pieces[(pID + 1) % 2].getRow() == boardSize) return Integer.MIN_VALUE;
+		
 		int enemyPID = (pID + 1) % 2;
 		int selfManhattan = manhattanDistance(pID);
 		int enemyManhattan = manhattanDistance(enemyPID);
+		
+		
 
-		return selfManhattan - enemyManhattan;
+		return enemyManhattan - selfManhattan;
 	}
 
 	// method does a BFS until it finds the goal state
@@ -297,7 +305,7 @@ public class Board implements BoardFeatures {
 				distSoFar = -1;
 				break;
 			}
-			// System.out.println("popped " + p.x + ", " + p.y);
+			// //System.out.println("popped " + p.x + ", " + p.y);
 			x = p.x;
 			y = p.y;
 			distSoFar = p.dist;
@@ -392,13 +400,15 @@ public class Board implements BoardFeatures {
 		if (junctArray[x][y].checkPossible(o)) {
 			performMove(m, pID);
 			// check if wall placement makes a full block
+			ignoreOccupiedFlag = true;
 			if (manhattanDistance(pID) == -1 || manhattanDistance((pID + 1) % 2) == -1) {
+				ignoreOccupiedFlag = false; 
 				undoMove(m, pID);
 				return false;
 			}
 			undoMove(m, pID);
 		}
-
+		ignoreOccupiedFlag = false;
 		return (junctArray[x][y].checkPossible(o));
 	}
 
@@ -411,7 +421,7 @@ public class Board implements BoardFeatures {
 	// returns whether piece move works, true for possible
 	public boolean checkPieceMove(PieceMove m, int pID) {
 
-		System.out.println("checking...");
+		//System.out.println("checking...");
 
 		int x1 = pieces[pID].getCol();
 		int y1 = pieces[pID].getRow();
@@ -467,8 +477,8 @@ public class Board implements BoardFeatures {
 		if (y2 == boardSize && pID == 0)
 			return false;
 
-		System.out.println("checking " + x2 + ", " + y2);
-		if (cellArray[x2][y2].occupied)
+		//System.out.println("checking " + x2 + ", " + y2);
+		if (cellArray[x2][y2].occupied && !ignoreOccupiedFlag)
 			return false;
 
 		return (junct1 != OrientationInQuestion && junct2 != OrientationInQuestion);
@@ -478,10 +488,10 @@ public class Board implements BoardFeatures {
 	public Orientation getJunctionState(int x, int y) {
 		if (x < 0 || x >= boardSize - 1 || y < 0 || y >= boardSize - 1) {
 
-			// System.out.println(x + " ye " + y);
+			// //System.out.println(x + " ye " + y);
 			return Orientation.OPEN;
 		}
-		// System.out.println(junctArray[x][y].getOrientation());
+		// //System.out.println(junctArray[x][y].getOrientation());
 		return junctArray[x][y].getOrientation();
 	}
 
@@ -514,14 +524,14 @@ public class Board implements BoardFeatures {
 		}
 
 		public void enqueue(CoordinatePair c) {
-			// System.out.println("adding " + c.x + ", " + c.y);
+			// //System.out.println("adding " + c.x + ", " + c.y);
 			stackList.add(c);
 			back++;
 		}
 
 		public CoordinatePair dequeue() {
 
-			// System.out.println(front + " " + back);
+			// //System.out.println(front + " " + back);
 			CoordinatePair c = stackList.get(front);
 			front++;
 
