@@ -19,6 +19,7 @@ public class GameUI {
 	int[] wallsLeft = new int[2];
 	private float cellMargin = cellSize * 0.1f;
 	private Hitbox[][][] hitboxes = new Hitbox[8][8][2]; // 8 X 8 and 2 orientations
+	private Move highlightedMove = null;
 
 	public GameUI(int cellSize, int boardSize) {
 		setCellSize(cellSize);
@@ -27,10 +28,14 @@ public class GameUI {
 		initHitboxes();
 	}
 
+	public Move getHighlightedMove() {
+		return highlightedMove;
+	}
+
 	public void draw(PApplet p) {
 
 		p.pushMatrix();
-		
+
 		p.translate(cellMargin + Main.margin, cellMargin);
 		// draw cells (no cell class necessary)
 		for (int x = 0; x < boardSize; x++) {
@@ -50,9 +55,10 @@ public class GameUI {
 
 		// draw players(no class necessary)
 		drawPlayers(p);
-		
-		p.popMatrix();
 		highlightWallSlots(p);
+
+		p.popMatrix();
+	
 		drawWallsLeft(p);
 	}
 
@@ -106,6 +112,7 @@ public class GameUI {
 		int j = 1;
 		wallsLeft[0] = scan.nextInt();
 		wallsLeft[1] = scan.nextInt();
+		wallsSoFar = 0;
 		while (j < boardSize) {
 			int i = 1;
 			while (i < boardSize) {
@@ -169,25 +176,23 @@ public class GameUI {
 	public int getCellSize() {
 		return cellSize;
 	}
-
-	public void highlightWallSlots( PApplet p) {
+	
+	public void highlightWallSlots(PApplet p) {
 		float xOffset = cellMargin + Main.margin;
 		float yOffset = cellMargin;
+
 		
-		p.pushMatrix();
-		p.translate(xOffset, yOffset);
 		for (int i = 0; i < 8; i++)
 			for (int j = 0; j < 8; j++)
 				for (int k = 0; k < 2; k++) {
-					if(hitboxes[i][j][k].withinBounds(p.mouseX- xOffset, p.mouseY - yOffset)) {
-						Orientation o = (k == 0)? Orientation.HORIZONTAL : Orientation.VERTICAL;
-						
+					if (hitboxes[i][j][k].withinBounds(p.mouseX - xOffset, p.mouseY - yOffset)) {
+						Orientation o = (k == 0) ? Orientation.HORIZONTAL : Orientation.VERTICAL;
 						hitboxes[i][j][k].draw(p, o);
-						break;
-						
-					}
+						highlightedMove = new WallMove(i, j, o);
+						return;
+					} highlightedMove =null;
 				}
-		p.popMatrix();
+	
 	}
 
 	public void initHitboxes() {
@@ -195,15 +200,14 @@ public class GameUI {
 		for (int i = 0; i < 8; i++)
 			for (int j = 0; j < 8; j++)
 				for (int k = 0; k < 2; k++) {
-					hitboxes[i][j][k] = new Hitbox(i+1,j+1,k);
+					hitboxes[i][j][k] = new Hitbox(i + 1, j + 1, k);
 				}
 
 	}
 
 	private class Hitbox {
 
-		
-		float x0,y0, x1, y1, x2, y2;
+		float x0, y0, x1, y1, x2, y2;
 
 		public Hitbox(float i, float j, float k) {
 
@@ -217,14 +221,12 @@ public class GameUI {
 				x2 = x0 + length / 2;
 				y1 = y0 - thickness / 2;
 				y2 = y0 + thickness / 2;
-			}
-			else 
-			{
+			} else {
 				x1 = x0 - thickness / 2;
 				x2 = x0 + thickness / 2;
 				y1 = y0 - length / 2;
 				y2 = y0 + length / 2;
-				
+
 			}
 
 		}
@@ -232,7 +234,6 @@ public class GameUI {
 		public boolean withinBounds(float x, float y) {
 			return (x > x1 && x < x2 && y > y1 && y < y2);
 		}
-		
 
 		public void draw(PApplet p, Orientation orientation) {
 			float length = cellSize * 2.1f, thickness = cellSize * 0.1f;
@@ -241,14 +242,14 @@ public class GameUI {
 
 				float left = x0 - length / 2;
 				float top = y0 - thickness / 2;
-				p.fill(0,0,0,100);
+				p.fill(0, 0, 0, 100);
 				p.rect(left, top, length, thickness);
 				break;
 
 			case VERTICAL:
 				top = y0 - length / 2;
 				left = x0 - thickness / 2;
-				p.fill(0,0,0,100);
+				p.fill(0, 0, 0, 100);
 				p.rect(left, top, thickness, length);
 				break;
 

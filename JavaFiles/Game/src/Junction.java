@@ -4,7 +4,7 @@ public class Junction {
 	//horizBlocked and vertBlocked prevent placement of walls in orientations that they cannot fit into
 	
 	
-	public boolean horizBlocked, vertBlocked, occupied;
+	public boolean horizBlocked = false, vertBlocked = false;
 	
 	
 	private Orientation orientation = Orientation.OPEN;
@@ -19,13 +19,14 @@ public class Junction {
 
 	public void setOrientation(Orientation orientation) {
 		this.orientation = orientation;
-		occupied = (orientation != Orientation.OPEN);
+		
 	}
 
 	public boolean checkPossible(Orientation O) {
-		if(occupied) return false;
-		if(O == Orientation.VERTICAL) return vertBlocked;
-		if(O == Orientation.HORIZONTAL) return horizBlocked;
+		System.out.println(O + ", " + vertBlocked + " "+ orientation);
+		if(this.orientation != Orientation.OPEN) return false;
+		if(O == Orientation.VERTICAL) return (!vertBlocked);
+		if(O == Orientation.HORIZONTAL) return (!horizBlocked);
 		return true;
 	}
 	

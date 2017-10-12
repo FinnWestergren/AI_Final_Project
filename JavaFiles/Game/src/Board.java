@@ -81,27 +81,30 @@ public class Board implements BoardFeatures {
 	// updates which cells are occupied
 
 	public void setPiece(int x, int y, int pID) {
+		
+		if (y < boardSize && y > -1) //if not gameover
 		cellArray[x][y].occupied = true;
 		pieces[pID].setCol(x);
 		pieces[pID].setRow(y);
+		
 	}
 
 	public void addWall(int x, int y, Orientation O, int pID) {
-		wallsLeft[pID]--;
-		junctArray[x][y].setOrientation(O);
+
 		if (O == Orientation.HORIZONTAL) {
-			if (x < boardSize - 1)
+			if (x < boardSize - 2)
 				junctArray[x + 1][y].horizBlocked = true;
-			if (x > 0)
+			if (x > 1)
 				junctArray[x - 1][y].horizBlocked = true;
 		}
 
 		if (O == Orientation.VERTICAL) {
-			if (y < boardSize - 1)
+			if (y < boardSize - 2)
 				junctArray[x][y + 1].vertBlocked = true;
-			if (y > 0)
+			if (y > 1)
 				junctArray[x][y - 1].vertBlocked = true;
 		}
+		junctArray[x][y].setOrientation(O);
 	}
 
 	// for use with GameUI that will process graphics
@@ -165,52 +168,38 @@ public class Board implements BoardFeatures {
 	private void performPieceMove(PieceMove m, int pID) {
 		int x = pieces[pID].getCol();
 		int y = pieces[pID].getRow();
+		int x2 = x;
+		int y2 = y;
 
-		if ((m).getDirection() == Direction.UP) {
-			pieces[pID].setCol(x);
-			pieces[pID].setRow(y + 1);
-			cellArray[x + 1][y].occupied = true;
+		switch (m.getDirection()) {
+		case UP:
+			y2--;
+			break;
+		case DOWN:
+			y2++;
+			break;
+		case LEFT:
+			x2--;
+			break;
+		case RIGHT:
+			x2++;
+			break;
 		}
-		if ((m).getDirection() == Direction.DOWN) {
-			pieces[pID].setCol(x);
-			pieces[pID].setRow(y - 1);
-			cellArray[x - 1][y].occupied = true;
-		}
-		if ((m).getDirection() == Direction.LEFT) {
-			pieces[pID].setCol(x - 1);
-			pieces[pID].setRow(y);
-			cellArray[x][y - 1].occupied = true;
-		}
-		if ((m).getDirection() == Direction.RIGHT) {
-			pieces[pID].setCol(x + 1);
-			pieces[pID].setRow(y);
-			cellArray[x][y + 1].occupied = true;
-		}
+		setPiece(x2, y2, pID);
 
 		cellArray[x][y].occupied = false;
 	}
 
 	private void performWallMove(WallMove m, int pID) {
+
 		wallsLeft[pID]--;
 
 		int x = m.getJunctX();
 		int y = m.getJunctY();
+
 		Orientation O = m.getOrientation();
 
-		junctArray[x][y].setOrientation(O);
-		if (O == Orientation.HORIZONTAL) {
-			if (x < boardSize - 1)
-				junctArray[x + 1][y].horizBlocked = true;
-			if (x > 0)
-				junctArray[x - 1][y].horizBlocked = true;
-		}
-
-		if (O == Orientation.VERTICAL) {
-			if (y < boardSize - 1)
-				junctArray[x][y + 1].vertBlocked = true;
-			if (y > 0)
-				junctArray[x][y - 1].vertBlocked = true;
-		}
+		addWall(x, y, O, pID);
 	}
 
 	@Override
@@ -222,7 +211,29 @@ public class Board implements BoardFeatures {
 	}
 
 	private void undoWallMove(WallMove m, int pID) {
-		junctArray[m.getJunctX()][m.getJunctY()].setOrientation(Orientation.OPEN);
+		int y = m.getJunctY();
+		int x = m.getJunctX();
+
+		if (m.getOrientation() == Orientation.VERTICAL) {
+
+			if (y > 1)
+				junctArray[x][y - 1].vertBlocked = false;
+			if (y < boardSize - 2)
+				junctArray[x][y + 1].vertBlocked = false;
+
+		}
+
+		if (m.getOrientation() == Orientation.HORIZONTAL) {
+
+			if (x > 1)
+				junctArray[x - 1][y].horizBlocked = false;
+			if (x < boardSize - 2)
+				junctArray[x + 1][y].horizBlocked = false;
+
+		}
+
+		junctArray[x][y].setOrientation(Orientation.OPEN);
+
 		wallsLeft[pID]++;
 	}
 
@@ -280,8 +291,9 @@ public class Board implements BoardFeatures {
 		while (true) {
 			CoordinatePair p;
 			// get the next coordinates off the stack if stack has anything left to give
-			if(searchQueue.back != searchQueue.front) p = searchQueue.dequeue();
-			else { //exit if stuck in loop. used for checking if wall placement is legal
+			if (searchQueue.back != searchQueue.front)
+				p = searchQueue.dequeue();
+			else { // exit if stuck in loop. used for checking if wall placement is legal
 				distSoFar = -1;
 				break;
 			}
@@ -294,7 +306,7 @@ public class Board implements BoardFeatures {
 				break;
 			pieces[pID].setCol(x);
 			pieces[pID].setRow(y);
-			
+
 			// iterate through all moves from this point
 			for (Direction dir : Direction.values()) {
 				PieceMove m = new PieceMove(dir);
@@ -302,27 +314,26 @@ public class Board implements BoardFeatures {
 				if (checkPieceMove(m, pID)) {
 					CoordinatePair moveTo = getCoordinatePairFromMove(m, pID);
 					// check if next is gameover
-					
-					if (moveTo.y != goalY) {	
+
+					if (moveTo.y != goalY) {
 						// check if move has already been looked at
 						if (!searched[moveTo.x][moveTo.y]) {
 							moveTo.dist = distSoFar + 1;
 							searchQueue.enqueue(moveTo);
 							searched[moveTo.x][moveTo.y] = true;
 						}
-						
-						//if goal state found
+
+						// if goal state found
 					} else {
 						moveTo.dist = distSoFar + 1;
 						searchQueue.enqueue(moveTo);
 						break;
 					}
-				} 
+				}
 			}
 
 			count++;
-			
-			
+
 		}
 		pieces[pID].setCol(xStart);
 		pieces[pID].setRow(yStart);
@@ -371,6 +382,8 @@ public class Board implements BoardFeatures {
 	}
 
 	private boolean checkWallMove(WallMove m, int pID) {
+		if (wallsLeft[pID] == 0)
+			return false;
 
 		int x = m.getJunctX();
 		int y = m.getJunctY();
@@ -379,11 +392,14 @@ public class Board implements BoardFeatures {
 		if (junctArray[x][y].checkPossible(o)) {
 			performMove(m, pID);
 			// check if wall placement makes a full block
-			if (manhattanDistance(pID) == -1 || manhattanDistance((pID + 1) % 2) == -1)
+			if (manhattanDistance(pID) == -1 || manhattanDistance((pID + 1) % 2) == -1) {
+				undoMove(m, pID);
 				return false;
+			}
+			undoMove(m, pID);
 		}
 
-		return true;
+		return (junctArray[x][y].checkPossible(o));
 	}
 
 	@Override
@@ -394,6 +410,8 @@ public class Board implements BoardFeatures {
 
 	// returns whether piece move works, true for possible
 	public boolean checkPieceMove(PieceMove m, int pID) {
+
+		System.out.println("checking...");
 
 		int x1 = pieces[pID].getCol();
 		int y1 = pieces[pID].getRow();
@@ -449,7 +467,7 @@ public class Board implements BoardFeatures {
 		if (y2 == boardSize && pID == 0)
 			return false;
 
-		// System.out.println("checking " + x2 + ", " + y2);
+		System.out.println("checking " + x2 + ", " + y2);
 		if (cellArray[x2][y2].occupied)
 			return false;
 
@@ -490,6 +508,7 @@ public class Board implements BoardFeatures {
 		private ArrayList<CoordinatePair> stackList = new ArrayList<CoordinatePair>();
 		public int front = 0;
 		public int back = 0;
+
 		public CPQueue() {
 
 		}
