@@ -123,6 +123,7 @@ public class Board implements BoardFeatures {
 			performWallMove((WallMove) m, pID);
 	}
 
+	//moves your feckin piece
 	private void performPieceMove(PieceMove m, int pID) {
 		int x = pieces[pID].getCol();
 		int y = pieces[pID].getRow();
@@ -151,6 +152,7 @@ public class Board implements BoardFeatures {
 		cellArray[x][y].occupied = false;
 	}
 
+	//puts down a feckin wall
 	private void performWallMove(WallMove m, int pID) {
 		wallsLeft[pID]--;
 

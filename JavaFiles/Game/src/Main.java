@@ -52,7 +52,7 @@ public class Main extends PApplet {
 	public void initGame() {
 
 		theBoard = new Board(boardSize);
-		player[0] = new Player("shrimpo 2, the squeakquel");
+		player[0] = new Player("shrimpo 2, the best of them");
 		player[1] = new Player("greg3001");
 		theBoard.init();
 		// testing addWall method
