@@ -12,7 +12,7 @@ public class Board implements BoardFeatures {
 	public GamePiece[] pieces = { new GamePiece(), new GamePiece() };
 	public int[] wallsLeft = { 10, 10 };
 	public static ArrayList<WallMove> allWallMoves = new ArrayList<WallMove>();
-	private boolean ignoreOccupiedFlag; // used when a player is blocking the only path
+	public boolean ignoreOccupiedFlag; // used when a player is blocking the only path
 
 	public Board(int boardSize) {
 		this.boardSize = boardSize;
@@ -82,12 +82,12 @@ public class Board implements BoardFeatures {
 	// updates which cells are occupied
 
 	public void setPiece(int x, int y, int pID) {
-		
-		if (y < boardSize && y > -1) //if not gameover
-		cellArray[x][y].occupied = true;
+
+		if (y < boardSize && y > -1) // if not gameover
+			cellArray[x][y].occupied = true;
 		pieces[pID].setCol(x);
 		pieces[pID].setRow(y);
-		
+
 	}
 
 	public void addWall(int x, int y, Orientation O, int pID) {
@@ -108,23 +108,6 @@ public class Board implements BoardFeatures {
 		junctArray[x][y].setOrientation(O);
 	}
 
-	// for use with GameUI that will process graphics
-	public String toString() {
-
-		String out = "";
-
-		out += wallsLeft[0] + " " + wallsLeft[1] + "\n";
-
-		for (int j = 0; j < boardSize - 1; j++) {
-			for (int i = 0; i < boardSize - 1; i++) {
-				out += junctArray[i][j].getOrientation().toString().substring(0, 1);
-				out += " ";
-			}
-			out += "\n";
-		}
-		return out;
-	}
-
 	/*
 	 * Order for methods 1 checkPossible - divide into smaller sub-methods -check
 	 * wall move -check piece move 2 create getAllMoves method -generate 8 piece
@@ -139,11 +122,15 @@ public class Board implements BoardFeatures {
 			mList.addAll(allWallMoves);
 		for (Direction dir : Direction.values()) {
 			mList.add(new PieceMove(dir));
+			for (Direction dir2 : Direction.values()) {
+				mList.add(new DoubleMove(new PieceMove(dir), new PieceMove(dir2)));
+			}
 		}
 		for (Move i : getAllMoves(pID)) {
 			if (checkPossible(i, pID))
 				mList.add(i);
 		}
+
 		return mList;
 	}
 
@@ -157,6 +144,153 @@ public class Board implements BoardFeatures {
 		return mList;
 	}
 
+	public boolean checkPossible(Move m, int pID) {
+		// TODO Auto-generated method stub
+
+		if (m instanceof PieceMove)
+			return checkPieceMove((PieceMove) m, pID);
+		if (m instanceof WallMove)
+			return checkWallMove((WallMove) m, pID);
+		if (m instanceof DoubleMove)
+			return checkDoubleMove((DoubleMove) m, pID);
+
+		return false;
+	}
+
+	// returns whether piece move works, true for possible
+	public boolean checkPieceMove(PieceMove m, int pID) {
+
+		// System.out.println("checking...");
+
+		int x1 = pieces[pID].getCol();
+		int y1 = pieces[pID].getRow();
+
+		Orientation OrientationInQuestion = Orientation.OPEN;
+
+		int x2 = x1;
+		int y2 = y1;
+
+		Orientation junct1 = Orientation.OPEN;
+		Orientation junct2 = Orientation.OPEN;
+
+		switch (m.getDirection()) {
+		case UP:
+			y2--;
+			junct1 = getJunctionState(x1 - 1, y1 - 1);
+			junct2 = getJunctionState(x1, y1 - 1);
+			OrientationInQuestion = Orientation.HORIZONTAL;
+			break;
+		case DOWN:
+			y2++;
+			junct1 = getJunctionState(x1 - 1, y1);
+			junct2 = getJunctionState(x1, y1);
+			OrientationInQuestion = Orientation.HORIZONTAL;
+			break;
+		case LEFT:
+			x2--;
+			junct1 = getJunctionState(x1 - 1, y1 - 1);
+			junct2 = getJunctionState(x1 - 1, y1);
+			OrientationInQuestion = Orientation.VERTICAL;
+			break;
+		case RIGHT:
+			x2++;
+			junct1 = getJunctionState(x1, y1 - 1);
+			junct2 = getJunctionState(x1, y1);
+			OrientationInQuestion = Orientation.VERTICAL;
+			break;
+
+		default:
+			break;
+		}
+
+		if (x2 == -1 || x2 == boardSize)
+			return false;
+
+		if (y2 == -1 && pID == 0)
+			return true;
+		if (y2 == boardSize && pID == 1)
+			return true;
+
+		if (y2 == -1 && pID == 1)
+			return false;
+		if (y2 == boardSize && pID == 0)
+			return false;
+
+		// System.out.println("checking " + x2 + ", " + y2);
+		if (cellArray[x2][y2].occupied && !ignoreOccupiedFlag) {
+			return false;
+		}
+
+		return (junct1 != OrientationInQuestion && junct2 != OrientationInQuestion);
+
+	}
+
+	public boolean checkDoubleMove(DoubleMove m, int pID) {
+		PieceMove m1 = m.getFirstMove();
+		PieceMove m2 = m.getSecondMove();
+
+		// System.out.println("checking...");
+
+		int x1 = pieces[pID].getCol();
+		int y1 = pieces[pID].getRow();
+
+		int x2 = x1;
+		int y2 = y1;
+
+		switch (m1.getDirection()) {
+		case UP:
+			y2--;
+			break;
+		case DOWN:
+			y2++;
+			break;
+		case LEFT:
+			x2--;
+			break;
+		case RIGHT:
+			x2++;
+			break;
+		default:
+			break;
+		}
+
+		if (!cellArray[x2][y2].occupied)
+			return false;
+
+		else {
+			ignoreOccupiedFlag = true;
+			performPieceMove(m1, pID);
+			boolean b = checkPieceMove(m2, pID);
+			ignoreOccupiedFlag = false;
+			undoPieceMove(m1,pID);
+			return b;
+		}
+
+	}
+
+	private boolean checkWallMove(WallMove m, int pID) {
+		if (wallsLeft[pID] == 0)
+			return false;
+
+		int x = m.getJunctX();
+		int y = m.getJunctY();
+		Orientation o = m.getOrientation();
+		// check if placement physically fits
+		if (junctArray[x][y].checkPossible(o)) {
+			performMove(m, pID);
+			// check if wall placement makes a full block
+			ignoreOccupiedFlag = true;
+			if (manhattanDistance(pID) == -1 || manhattanDistance((pID + 1) % 2) == -1) {
+				ignoreOccupiedFlag = false;
+				undoMove(m, pID);
+				return false;
+			}
+			undoMove(m, pID);
+		}
+		ignoreOccupiedFlag = false;
+		return (junctArray[x][y].checkPossible(o));
+	}
+
 	@Override
 	public void performMove(Move m, int pID) {
 		// TODO Auto-generated method stub
@@ -164,6 +298,10 @@ public class Board implements BoardFeatures {
 			performPieceMove((PieceMove) m, pID);
 		if (m instanceof WallMove)
 			performWallMove((WallMove) m, pID);
+		if (m instanceof DoubleMove) {
+			performPieceMove(((DoubleMove) m).getFirstMove(), pID);
+			performPieceMove(((DoubleMove) m).getSecondMove(), pID);
+		}
 	}
 
 	private void performPieceMove(PieceMove m, int pID) {
@@ -209,6 +347,10 @@ public class Board implements BoardFeatures {
 			undoPieceMove((PieceMove) m, pID);
 		if (m instanceof WallMove)
 			undoWallMove((WallMove) m, pID);
+		if (m instanceof DoubleMove) {
+			undoPieceMove(((DoubleMove) m).getSecondMove(), pID);
+			undoPieceMove(((DoubleMove) m).getFirstMove(), pID);
+		}
 	}
 
 	private void undoWallMove(WallMove m, int pID) {
@@ -258,19 +400,19 @@ public class Board implements BoardFeatures {
 	@Override
 	public int getBoardValue(int pID) {
 		// decide heuristic here. for now just this :
-		//  enemy manhattan distance - self manhattan
+		// enemy manhattan distance - self manhattan
 		// alphabeta should be trying to maximize this value
-		
+
 		// if the state is a game over state, return arbitrarily large/small values
 
-		if(pieces[pID].getRow() == -1 || pieces[pID].getRow() == boardSize) return Integer.MAX_VALUE;
-		if(pieces[(pID + 1) % 2].getRow() == -1 || pieces[(pID + 1) % 2].getRow() == boardSize) return Integer.MIN_VALUE;
-		
+		if (pieces[pID].getRow() == -1 || pieces[pID].getRow() == boardSize)
+			return Integer.MAX_VALUE;
+		if (pieces[(pID + 1) % 2].getRow() == -1 || pieces[(pID + 1) % 2].getRow() == boardSize)
+			return Integer.MIN_VALUE;
+
 		int enemyPID = (pID + 1) % 2;
 		int selfManhattan = manhattanDistance(pID);
 		int enemyManhattan = manhattanDistance(enemyPID);
-		
-		
 
 		return enemyManhattan - selfManhattan;
 	}
@@ -378,111 +520,10 @@ public class Board implements BoardFeatures {
 		return new CoordinatePair(x, y);
 	}
 
-	public boolean checkPossible(Move m, int pID) {
-		// TODO Auto-generated method stub
-
-		if (m instanceof PieceMove)
-			return checkPieceMove((PieceMove) m, pID);
-		if (m instanceof WallMove)
-			return checkWallMove((WallMove) m, pID);
-
-		return false;
-	}
-
-	private boolean checkWallMove(WallMove m, int pID) {
-		if (wallsLeft[pID] == 0)
-			return false;
-
-		int x = m.getJunctX();
-		int y = m.getJunctY();
-		Orientation o = m.getOrientation();
-		// check if placement physically fits
-		if (junctArray[x][y].checkPossible(o)) {
-			performMove(m, pID);
-			// check if wall placement makes a full block
-			ignoreOccupiedFlag = true;
-			if (manhattanDistance(pID) == -1 || manhattanDistance((pID + 1) % 2) == -1) {
-				ignoreOccupiedFlag = false; 
-				undoMove(m, pID);
-				return false;
-			}
-			undoMove(m, pID);
-		}
-		ignoreOccupiedFlag = false;
-		return (junctArray[x][y].checkPossible(o));
-	}
-
 	@Override
 	public boolean checkGameOver() {
 		// TODO return whether game over;
 		return false;
-	}
-
-	// returns whether piece move works, true for possible
-	public boolean checkPieceMove(PieceMove m, int pID) {
-
-		//System.out.println("checking...");
-
-		int x1 = pieces[pID].getCol();
-		int y1 = pieces[pID].getRow();
-
-		Orientation OrientationInQuestion = Orientation.OPEN;
-
-		int x2 = x1;
-		int y2 = y1;
-
-		Orientation junct1 = Orientation.OPEN;
-		Orientation junct2 = Orientation.OPEN;
-
-		switch (m.getDirection()) {
-		case UP:
-			y2--;
-			junct1 = getJunctionState(x1 - 1, y1 - 1);
-			junct2 = getJunctionState(x1, y1 - 1);
-			OrientationInQuestion = Orientation.HORIZONTAL;
-			break;
-		case DOWN:
-			y2++;
-			junct1 = getJunctionState(x1 - 1, y1);
-			junct2 = getJunctionState(x1, y1);
-			OrientationInQuestion = Orientation.HORIZONTAL;
-			break;
-		case LEFT:
-			x2--;
-			junct1 = getJunctionState(x1 - 1, y1 - 1);
-			junct2 = getJunctionState(x1 - 1, y1);
-			OrientationInQuestion = Orientation.VERTICAL;
-			break;
-		case RIGHT:
-			x2++;
-			junct1 = getJunctionState(x1, y1 - 1);
-			junct2 = getJunctionState(x1, y1);
-			OrientationInQuestion = Orientation.VERTICAL;
-			break;
-
-		default:
-			break;
-		}
-
-		if (x2 == -1 || x2 == boardSize)
-			return false;
-
-		if (y2 == -1 && pID == 0)
-			return true;
-		if (y2 == boardSize && pID == 1)
-			return true;
-
-		if (y2 == -1 && pID == 1)
-			return false;
-		if (y2 == boardSize && pID == 0)
-			return false;
-
-		//System.out.println("checking " + x2 + ", " + y2);
-		if (cellArray[x2][y2].occupied && !ignoreOccupiedFlag)
-			return false;
-
-		return (junct1 != OrientationInQuestion && junct2 != OrientationInQuestion);
-
 	}
 
 	public Orientation getJunctionState(int x, int y) {
@@ -493,6 +534,23 @@ public class Board implements BoardFeatures {
 		}
 		// //System.out.println(junctArray[x][y].getOrientation());
 		return junctArray[x][y].getOrientation();
+	}
+
+	// for use with GameUI that will process graphics
+	public String toString() {
+
+		String out = "";
+
+		out += wallsLeft[0] + " " + wallsLeft[1] + "\n";
+
+		for (int j = 0; j < boardSize - 1; j++) {
+			for (int i = 0; i < boardSize - 1; i++) {
+				out += junctArray[i][j].getOrientation().toString().substring(0, 1);
+				out += " ";
+			}
+			out += "\n";
+		}
+		return out;
 	}
 
 	// simple struct for listing 2 coordinate ints in one type, for use in BFS. also

@@ -21,6 +21,8 @@ public class GameUI {
 	private Hitbox[][][] hitboxes = new Hitbox[8][8][2]; // 8 X 8 and 2 orientations
 	private Move highlightedMove = null;
 
+	public int currentPlayer = 0;
+
 	public GameUI(int cellSize, int boardSize) {
 		setCellSize(cellSize);
 		setBoardSize(boardSize);
@@ -62,11 +64,20 @@ public class GameUI {
 		drawWallsLeft(p);
 	}
 
-	public void drawPlayers(PApplet p) {
+	public void drawPlayers(PApplet p) { //written to draw current player on top in case of double move
+		if(currentPlayer == 1) {
 		p.fill(80, 80, 150);
 		p.ellipse(P1x, P1y, cellSize * .7f, cellSize * .7f);
 		p.fill(230, 230, 0);
 		p.ellipse(P2x, P2y, cellSize * .7f, cellSize * .7f);
+		}
+		else {
+			
+			p.fill(230, 230, 0);
+			p.ellipse(P2x, P2y, cellSize * .7f, cellSize * .7f);
+			p.fill(80, 80, 150);
+			p.ellipse(P1x, P1y, cellSize * .7f, cellSize * .7f);
+		}
 
 	}
 

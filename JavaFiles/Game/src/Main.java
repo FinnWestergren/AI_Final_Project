@@ -44,8 +44,8 @@ public class Main extends PApplet {
 		rect(-1, -1, width + 2, height + 1);
 		gameUI.draw(this);
 		noStroke();
-		fill(255 * currentPlayer,255 * currentPlayer,255 - (currentPlayer *255));
-		ellipse(margin  + (currentPlayer *(windowSize)) - 0.05f*margin, 10,15,15);
+		fill(255 * currentPlayer, 255 * currentPlayer, 255 - (currentPlayer * 255));
+		ellipse(margin + (currentPlayer * (windowSize)) - 0.05f * margin, 10, 15, 15);
 
 	}
 
@@ -66,6 +66,7 @@ public class Main extends PApplet {
 	}
 
 	public void updateGraphics() {
+		gameUI.currentPlayer = currentPlayer;
 		gameUI.update(theBoard.toString(), theBoard.pieces[0], theBoard.pieces[1]);
 	}
 
@@ -117,6 +118,14 @@ public class Main extends PApplet {
 			System.out.println(
 					"Player " + (currentPlayer + 1) + "'s value of board: " + theBoard.getBoardValue(currentPlayer));
 			currentPlayer = (currentPlayer + 1) % 2;
+		} else {
+			theBoard.ignoreOccupiedFlag = true;
+			if (theBoard.checkPossible(move, currentPlayer)) {
+				theBoard.performMove(move, currentPlayer);
+				updateGraphics();
+				//a kind of fake double move
+			}
+			theBoard.ignoreOccupiedFlag = false;
 		}
 	}
 }
