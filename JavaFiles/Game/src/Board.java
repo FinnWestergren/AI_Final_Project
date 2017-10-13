@@ -189,6 +189,7 @@ public class Board implements BoardFeatures {
 		wallsLeft[pID]++;
 	}
 
+	// ooh look at this method it's fancy and has a switch statement, how magical
 	private void undoPieceMove(PieceMove m, int pID) {
 		switch (m.getDirection()) {
 		case UP:
