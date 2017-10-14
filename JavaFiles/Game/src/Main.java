@@ -39,7 +39,8 @@ public class Main extends PApplet {
 	}
 
 	public void draw() {
-		fill(255, 155, 111, 255);
+		frameRate(60);
+		fill((int)(Math.random()*255), (int) (Math.random()*255),(int)(Math.random()*255), 255);
 		noStroke();
 		rect(-1, -1, width + 2, height + 1);
 		gameUI.draw(this);
