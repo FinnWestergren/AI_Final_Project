@@ -108,14 +108,14 @@ public class GameUI {
 		}
 	}
 
-	public void updatePlayers(GamePiece p1, GamePiece p2) {
-		P1x = (p1.getCol() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
-		P1y = (p1.getRow() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
-		P2x = (p2.getCol() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
-		P2y = (p2.getRow() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
+	public void updatePlayers(CoordinatePair p1, CoordinatePair p2) {
+		P1x = (p1.getX() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
+		P1y = (p1.getY() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
+		P2x = (p2.getX() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
+		P2y = (p2.getY() + 1) * (cellSize * 1.1f) - cellSize * 0.6f;
 	}
 
-	public void update(String BoardIn, GamePiece p1, GamePiece p2) {
+	public void update(String BoardIn, CoordinatePair p1, CoordinatePair p2) {
 
 		// decided to pass the boards Game Pieces in directly for interaction
 		updatePlayers(p1, p2);

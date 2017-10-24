@@ -9,10 +9,11 @@ public class Board implements BoardFeatures {
 	public Cell[][] cellArray;
 	public Junction[][] junctArray;
 	public Move[] allJuncMoves;
-	public GamePiece[] pieces = { new GamePiece(), new GamePiece() };
+	public CoordinatePair[] pieceLocation = { new CoordinatePair(), new CoordinatePair() };
 	public int[] wallsLeft = { 10, 10 };
 	public static ArrayList<WallMove> allWallMoves = new ArrayList<WallMove>();
 	public boolean ignoreOccupiedFlag; // used when a player is blocking the only path
+	boolean gameOver = false;
 
 	public Board(int boardSize) {
 		this.boardSize = boardSize;
@@ -20,10 +21,8 @@ public class Board implements BoardFeatures {
 		junctArray = new Junction[boardSize - 1][boardSize - 1];
 	}
 
-	// initializes a board...
-	// TODO create another init with a string param and player position params
-	// for testing purposes
-	// TODO get all junction moves and init static array
+	// TODO refactor using new coord pair class
+	//
 	public void init(File readFile) {
 		for (int j = 0; j < boardSize; j++) {
 			for (int i = 0; i < boardSize; i++) {
@@ -48,9 +47,10 @@ public class Board implements BoardFeatures {
 			int x1 = boardScanner.nextInt();
 			int y1 = boardScanner.nextInt();
 			wallsLeft[1] = boardScanner.nextInt();
-
-			setPiece(x0, y0, 0);
-			setPiece(x1, y1, 1);
+			CoordinatePair location0 = new CoordinatePair(x0, y0);
+			CoordinatePair location1 = new CoordinatePair(x1, y1);
+			setPiece(location0, 0);
+			setPiece(location1, 1);
 
 			for (int j = 0; j < boardSize - 1; j++)
 				for (int i = 0; i < boardSize - 1; i++) {
@@ -81,13 +81,15 @@ public class Board implements BoardFeatures {
 	// for use in update and init
 	// updates which cells are occupied
 
-	public void setPiece(int x, int y, int pID) {
+	public void setPiece(CoordinatePair cp, int pID) {
 
-		if (y < boardSize && y > -1) // if not gameover
+		int x = cp.getX();
+		int y = cp.getY();
+		if (y < boardSize && y > -1) { // if not gameover
 			cellArray[x][y].occupied = true;
-		pieces[pID].setCol(x);
-		pieces[pID].setRow(y);
-
+			
+		} else gameOver = true;
+		pieceLocation[pID] = cp;
 	}
 
 	public void addWall(int x, int y, Orientation O, int pID) {
@@ -108,6 +110,32 @@ public class Board implements BoardFeatures {
 		junctArray[x][y].setOrientation(O);
 	}
 
+	private ArrayList<PieceMove> getAllPieceMoves(int pID) {
+		ArrayList<PieceMove> mList = new ArrayList<PieceMove>();
+		CoordinatePair from = pieceLocation[pID];
+
+		for (Direction d : Direction.values()) {
+			CoordinatePair step1 = from.getNextCoordinatePairFromDirection(d); // first step;
+			mList.add(new PieceMove(from, step1));
+		}
+
+		return mList;
+	}
+	
+	private ArrayList<PieceMove> getAllDoublePieceMoves(int pID) {
+		ArrayList<PieceMove> mList = new ArrayList<PieceMove>();
+		CoordinatePair from = pieceLocation[pID];
+
+		for (Direction d : Direction.values()) {
+			CoordinatePair step1 = from.getNextCoordinatePairFromDirection(d); // first step; 
+					for (Direction d2 : Direction.values()) {
+						CoordinatePair step2 = step1.getNextCoordinatePairFromDirection(d2); // second step;
+						mList.add(new PieceMove(from, step1, step2));
+					}
+				}
+		return mList;
+	}
+
 	/*
 	 * Order for methods 1 checkPossible - divide into smaller sub-methods -check
 	 * wall move -check piece move 2 create getAllMoves method -generate 8 piece
@@ -120,16 +148,8 @@ public class Board implements BoardFeatures {
 		ArrayList<Move> mList = new ArrayList<Move>();
 		if (wallsLeft[pID] != 0)
 			mList.addAll(allWallMoves);
-		for (Direction dir : Direction.values()) {
-			mList.add(new PieceMove(dir));
-			for (Direction dir2 : Direction.values()) {
-				mList.add(new DoubleMove(new PieceMove(dir), new PieceMove(dir2)));
-			}
-		}
-		for (Move i : getAllMoves(pID)) {
-			if (checkPossible(i, pID))
-				mList.add(i);
-		}
+
+		mList.addAll(getAllPieceMoves(pID));
 
 		return mList;
 	}
@@ -144,6 +164,19 @@ public class Board implements BoardFeatures {
 		return mList;
 	}
 
+	public boolean checkOccupied(CoordinatePair c) {
+		if(!withinBounds(c)) return false;
+		return cellArray[c.getX()][c.getY()].occupied;
+	}
+
+	private boolean withinBounds(CoordinatePair c) {
+		if (c.getX() >= boardSize || c.getX() < 0)
+			return false;
+		if (c.getY() >= boardSize || c.getY() < 0)
+			return false;
+		return true;
+	}
+
 	public boolean checkPossible(Move m, int pID) {
 		// TODO Auto-generated method stub
 
@@ -151,8 +184,6 @@ public class Board implements BoardFeatures {
 			return checkPieceMove((PieceMove) m, pID);
 		if (m instanceof WallMove)
 			return checkWallMove((WallMove) m, pID);
-		if (m instanceof DoubleMove)
-			return checkDoubleMove((DoubleMove) m, pID);
 
 		return false;
 	}
@@ -162,38 +193,29 @@ public class Board implements BoardFeatures {
 
 		// System.out.println("checking...");
 
-		int x1 = pieces[pID].getCol();
-		int y1 = pieces[pID].getRow();
-
-		Orientation OrientationInQuestion = Orientation.OPEN;
-
-		int x2 = x1;
-		int y2 = y1;
+		int x1 = m.getFrom().getX(), y1 = m.getStep1().getY();
 
 		Orientation junct1 = Orientation.OPEN;
 		Orientation junct2 = Orientation.OPEN;
+		Orientation OrientationInQuestion = Orientation.OPEN;
 
-		switch (m.getDirection()) {
+		switch (m.getFirstDirection()) {
 		case UP:
-			y2--;
 			junct1 = getJunctionState(x1 - 1, y1 - 1);
 			junct2 = getJunctionState(x1, y1 - 1);
 			OrientationInQuestion = Orientation.HORIZONTAL;
 			break;
 		case DOWN:
-			y2++;
 			junct1 = getJunctionState(x1 - 1, y1);
 			junct2 = getJunctionState(x1, y1);
 			OrientationInQuestion = Orientation.HORIZONTAL;
 			break;
 		case LEFT:
-			x2--;
 			junct1 = getJunctionState(x1 - 1, y1 - 1);
 			junct2 = getJunctionState(x1 - 1, y1);
 			OrientationInQuestion = Orientation.VERTICAL;
 			break;
 		case RIGHT:
-			x2++;
 			junct1 = getJunctionState(x1, y1 - 1);
 			junct2 = getJunctionState(x1, y1);
 			OrientationInQuestion = Orientation.VERTICAL;
@@ -203,68 +225,24 @@ public class Board implements BoardFeatures {
 			break;
 		}
 
-		if (x2 == -1 || x2 == boardSize)
-			return false;
-
-		if (y2 == -1 && pID == 0)
-			return true;
-		if (y2 == boardSize && pID == 1)
-			return true;
-
-		if (y2 == -1 && pID == 1)
-			return false;
-		if (y2 == boardSize && pID == 0)
-			return false;
-
-		// System.out.println("checking " + x2 + ", " + y2);
-		if (cellArray[x2][y2].occupied && !ignoreOccupiedFlag) {
-			return false;
+		int yGoal = (pID == 0) ? -1 : boardSize;
+		
+		if(junct1 == OrientationInQuestion || junct2 == OrientationInQuestion) return false;
+		
+		if(!withinBounds(m.getStep1())){
+			if(m.getTo().getY() != yGoal) return false;
 		}
-
-		return (junct1 != OrientationInQuestion && junct2 != OrientationInQuestion);
-
-	}
-
-	public boolean checkDoubleMove(DoubleMove m, int pID) {
-		PieceMove m1 = m.getFirstMove();
-		PieceMove m2 = m.getSecondMove();
-
-		// System.out.println("checking...");
-
-		int x1 = pieces[pID].getCol();
-		int y1 = pieces[pID].getRow();
-
-		int x2 = x1;
-		int y2 = y1;
-
-		switch (m1.getDirection()) {
-		case UP:
-			y2--;
-			break;
-		case DOWN:
-			y2++;
-			break;
-		case LEFT:
-			x2--;
-			break;
-		case RIGHT:
-			x2++;
-			break;
-		default:
-			break;
+		
+		if(m.getStep2() != null){
+			if(checkOccupied(m.getStep1())) {
+			PieceMove move2 = new PieceMove(m.getStep1(), m.getStep2());
+			return checkPieceMove(move2, pID);
+			}else return false;
 		}
-
-		if (!cellArray[x2][y2].occupied)
-			return false;
-
-		else {
-			ignoreOccupiedFlag = true;
-			performPieceMove(m1, pID);
-			boolean b = checkPieceMove(m2, pID);
-			ignoreOccupiedFlag = false;
-			undoPieceMove(m1,pID);
-			return b;
-		}
+		
+		return true;
+		
+		 
 
 	}
 
@@ -298,39 +276,16 @@ public class Board implements BoardFeatures {
 			performPieceMove((PieceMove) m, pID);
 		if (m instanceof WallMove)
 			performWallMove((WallMove) m, pID);
-		if (m instanceof DoubleMove) {
-			performPieceMove(((DoubleMove) m).getFirstMove(), pID);
-			performPieceMove(((DoubleMove) m).getSecondMove(), pID);
-		}
+
 	}
 
-	//moves your feckin piece
+	// moves your feckin piece
 	private void performPieceMove(PieceMove m, int pID) {
-		int x = pieces[pID].getCol();
-		int y = pieces[pID].getRow();
-		int x2 = x;
-		int y2 = y;
-
-		switch (m.getDirection()) {
-		case UP:
-			y2--;
-			break;
-		case DOWN:
-			y2++;
-			break;
-		case LEFT:
-			x2--;
-			break;
-		case RIGHT:
-			x2++;
-			break;
-		}
-		setPiece(x2, y2, pID);
-
-		cellArray[x][y].occupied = false;
+		cellArray[m.getFrom().getX()][m.getFrom().getY()].occupied = false;
+		setPiece(m.getTo(), pID);
 	}
 
-	//puts down a feckin wall
+	// puts down a feckin wall
 	private void performWallMove(WallMove m, int pID) {
 
 		wallsLeft[pID]--;
@@ -349,10 +304,7 @@ public class Board implements BoardFeatures {
 			undoPieceMove((PieceMove) m, pID);
 		if (m instanceof WallMove)
 			undoWallMove((WallMove) m, pID);
-		if (m instanceof DoubleMove) {
-			undoPieceMove(((DoubleMove) m).getSecondMove(), pID);
-			undoPieceMove(((DoubleMove) m).getFirstMove(), pID);
-		}
+
 	}
 
 	private void undoWallMove(WallMove m, int pID) {
@@ -384,20 +336,7 @@ public class Board implements BoardFeatures {
 
 	// ooh look at this method it's fancy and has a switch statement, how magical
 	private void undoPieceMove(PieceMove m, int pID) {
-		switch (m.getDirection()) {
-		case UP:
-			performPieceMove(new PieceMove(Direction.DOWN), pID);
-			break;
-		case DOWN:
-			performPieceMove(new PieceMove(Direction.UP), pID);
-			break;
-		case LEFT:
-			performPieceMove(new PieceMove(Direction.RIGHT), pID);
-			break;
-		case RIGHT:
-			performPieceMove(new PieceMove(Direction.LEFT), pID);
-			break;
-		}
+		performPieceMove(m.getReverse(), pID);
 	}
 
 	@Override
@@ -408,9 +347,9 @@ public class Board implements BoardFeatures {
 
 		// if the state is a game over state, return arbitrarily large/small values
 
-		if (pieces[pID].getRow() == -1 || pieces[pID].getRow() == boardSize)
+		if (pieceLocation[pID].getY() == -1 || pieceLocation[pID].getY() == boardSize)
 			return Integer.MAX_VALUE;
-		if (pieces[(pID + 1) % 2].getRow() == -1 || pieces[(pID + 1) % 2].getRow() == boardSize)
+		if (pieceLocation[(pID + 1) % 2].getY() == -1 || pieceLocation[(pID + 1) % 2].getY() == boardSize)
 			return Integer.MIN_VALUE;
 
 		int enemyPID = (pID + 1) % 2;
@@ -424,8 +363,7 @@ public class Board implements BoardFeatures {
 	public int manhattanDistance(int pID) {
 
 		int distSoFar = 0;
-		int xStart = pieces[pID].getCol();
-		int yStart = pieces[pID].getRow();
+		CoordinatePair pStart = new CoordinatePair(pieceLocation[pID].getX(), pieceLocation[pID].getY());
 
 		// goalY is -1 if player 0 (moving up), 9 if player 1 (moving down)
 		int goalY = (pID == 0) ? -1 : boardSize;
@@ -434,99 +372,55 @@ public class Board implements BoardFeatures {
 		boolean[][] searched = new boolean[boardSize][boardSize];
 
 		// searchStack is the BFS stack
-		CPQueue searchQueue = new CPQueue();
-		searchQueue.enqueue(new CoordinatePair(xStart, yStart, distSoFar));
+		MDQueue searchQueue = new MDQueue();
+		searchQueue.enqueue(new ManhattanDistanceNode(pStart, distSoFar));
 
-		int x;
-		int y;
-
-		int count = 0;
 		while (true) {
-			CoordinatePair p;
+			ManhattanDistanceNode currentNode;
 			// get the next coordinates off the stack if stack has anything left to give
 			if (searchQueue.back != searchQueue.front)
-				p = searchQueue.dequeue();
+				currentNode = searchQueue.dequeue();
 			else { // exit if stuck in loop. used for checking if wall placement is legal
 				distSoFar = -1;
 				break;
 			}
 			// //System.out.println("popped " + p.x + ", " + p.y);
-			x = p.x;
-			y = p.y;
-			distSoFar = p.dist;
+			distSoFar = currentNode.dist;
 			// base case: if player has reached end of board;
-			if (y == goalY)
+			if (currentNode.location.getY() == goalY)
 				break;
-			pieces[pID].setCol(x);
-			pieces[pID].setRow(y);
-
+			pieceLocation[pID] = currentNode.location;
+			ArrayList<PieceMove> mList = new ArrayList<PieceMove>();
+			mList.addAll(getAllDoublePieceMoves(pID));
+			mList.addAll(getAllPieceMoves(pID));
 			// iterate through all moves from this point
-			for (Direction dir : Direction.values()) {
-				PieceMove m = new PieceMove(dir);
-				// check if move is legal
+			for (PieceMove m : mList) {
 				if (checkPieceMove(m, pID)) {
-					CoordinatePair moveTo = getCoordinatePairFromMove(m, pID);
+					ManhattanDistanceNode moveTo = new ManhattanDistanceNode(m.getTo(), distSoFar + 1);
 					// check if next is gameover
+					
 
-					if (moveTo.y != goalY) {
-						// check if move has already been looked at
-						if (!searched[moveTo.x][moveTo.y]) {
-							moveTo.dist = distSoFar + 1;
-							searchQueue.enqueue(moveTo);
-							searched[moveTo.x][moveTo.y] = true;
-						}
+					if (moveTo.location.getY() == goalY) {
+						pieceLocation[pID] = pStart;
+						return distSoFar+1;
+					}
+					// check if move has already been looked at
 
-						// if goal state found
-					} else {
-						moveTo.dist = distSoFar + 1;
+					if (!searched[moveTo.location.getX()][moveTo.location.getY()]) {
 						searchQueue.enqueue(moveTo);
-						break;
+						searched[moveTo.location.getX()][moveTo.location.getY()] = true;
 					}
 				}
 			}
-
-			count++;
-
 		}
-		pieces[pID].setCol(xStart);
-		pieces[pID].setRow(yStart);
+		pieceLocation[pID] = pStart;
 		return distSoFar;
-	}
-
-	// returns the coordinate pair that a move brings you to
-	public CoordinatePair getCoordinatePairFromMove(PieceMove m, int pID) {
-		int x = pieces[pID].getCol();
-		int y = pieces[pID].getRow();
-
-		switch (m.getDirection()) {
-		case UP:
-			y--;
-
-			break;
-		case DOWN:
-			y++;
-
-			break;
-		case LEFT:
-			x--;
-
-			break;
-		case RIGHT:
-			x++;
-
-			break;
-
-		default:
-			break;
-
-		}
-		return new CoordinatePair(x, y);
 	}
 
 	@Override
 	public boolean checkGameOver() {
 		// TODO return whether game over;
-		return false;
+		return gameOver;
 	}
 
 	public Orientation getJunctionState(int x, int y) {
@@ -556,49 +450,41 @@ public class Board implements BoardFeatures {
 		return out;
 	}
 
-	// simple struct for listing 2 coordinate ints in one type, for use in BFS. also
-	// contains a distance element;
-	private class CoordinatePair {
-		public int x, y, dist;
+	// for use in manhattanDistance and the MDQueue
+	private class ManhattanDistanceNode {
 
-		public CoordinatePair(int x, int y, int dist) {
-			this.x = x;
-			this.y = y;
+		public int dist;
+		CoordinatePair location;
+
+		public ManhattanDistanceNode(CoordinatePair location, int dist) {
+			this.location = location;
 			this.dist = dist;
-		}
-
-		public CoordinatePair(int x, int y) {
-			this.x = x;
-			this.y = y;
 		}
 	}
 
 	// used for breadth first search in manhattan()
-	private class CPQueue {
+	private class MDQueue {
 
-		private ArrayList<CoordinatePair> stackList = new ArrayList<CoordinatePair>();
+		private ArrayList<ManhattanDistanceNode> stackList = new ArrayList<ManhattanDistanceNode>();
 		public int front = 0;
 		public int back = 0;
 
-		public CPQueue() {
+		public MDQueue() {
 
 		}
 
-		public void enqueue(CoordinatePair c) {
+		public void enqueue(ManhattanDistanceNode c) {
 			// //System.out.println("adding " + c.x + ", " + c.y);
 			stackList.add(c);
 			back++;
 		}
 
-		public CoordinatePair dequeue() {
-
+		public ManhattanDistanceNode dequeue() {
 			// //System.out.println(front + " " + back);
-			CoordinatePair c = stackList.get(front);
+			ManhattanDistanceNode c = stackList.get(front);
 			front++;
 
 			return c;
 		}
-
 	}
-
 }

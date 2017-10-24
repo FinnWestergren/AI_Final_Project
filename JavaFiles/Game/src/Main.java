@@ -39,6 +39,7 @@ public class Main extends PApplet {
 	}
 
 	public void draw() {
+		if(!theBoard.checkGameOver()) {
 		fill(255, 155, 111, 255);
 		noStroke();
 		rect(-1, -1, width + 2, height + 1);
@@ -46,6 +47,10 @@ public class Main extends PApplet {
 		noStroke();
 		fill(255 * currentPlayer, 255 * currentPlayer, 255 - (currentPlayer * 255));
 		ellipse(margin + (currentPlayer * (windowSize)) - 0.05f * margin, 10, 15, 15);
+		}
+		else {
+			setup();
+		}
 
 	}
 
@@ -67,7 +72,7 @@ public class Main extends PApplet {
 
 	public void updateGraphics() {
 		gameUI.currentPlayer = currentPlayer;
-		gameUI.update(theBoard.toString(), theBoard.pieces[0], theBoard.pieces[1]);
+		gameUI.update(theBoard.toString(), theBoard.pieceLocation[0], theBoard.pieceLocation[1]);
 	}
 
 	public void mousePressed() {
@@ -84,24 +89,28 @@ public class Main extends PApplet {
 			return;
 
 		if (player[currentPlayer] instanceof HumanPlayer) {
-			PieceMove m = new PieceMove(Direction.UP);
+			
+			CoordinatePair from = theBoard.pieceLocation[currentPlayer];
+			CoordinatePair to;
 			switch (keyCode) {
 
 			case UP:
-				m.setDirection(Direction.UP);
+				to = from.getNextCoordinatePairFromDirection(Direction.UP);
 				break;
 			case DOWN:
-				m.setDirection(Direction.DOWN);
+				to = from.getNextCoordinatePairFromDirection(Direction.DOWN);
 				break;
 			case LEFT:
-				m.setDirection(Direction.LEFT);
+				to = from.getNextCoordinatePairFromDirection(Direction.LEFT);;
 				break;
 			case RIGHT:
-				m.setDirection(Direction.RIGHT);
+				to = from.getNextCoordinatePairFromDirection(Direction.RIGHT);
 				break;
+			default:
+				return;
 			}
 
-			PerformMove(m);
+			PerformMove(new PieceMove(from,to));
 		}
 
 	}
@@ -111,21 +120,21 @@ public class Main extends PApplet {
 			return;
 
 		if (theBoard.checkPossible(move, currentPlayer)) {
+			boolean doubleMove = false;
+			
+			if(move instanceof PieceMove) {
+				if(theBoard.checkOccupied(((PieceMove) move).getTo()))
+					doubleMove = true;
+			}
 
 			theBoard.performMove(move, currentPlayer);
 
 			updateGraphics();
 			System.out.println(
-					"Player " + (currentPlayer + 1) + "'s value of board: " + theBoard.getBoardValue(currentPlayer));
+					"Player " + (currentPlayer + 1) + "'s manhattan distance: " + theBoard.manhattanDistance(currentPlayer));
+			
+			if(!doubleMove)
 			currentPlayer = (currentPlayer + 1) % 2;
-		} else {
-			theBoard.ignoreOccupiedFlag = true;
-			if (theBoard.checkPossible(move, currentPlayer)) {
-				theBoard.performMove(move, currentPlayer);
-				updateGraphics();
-				//a kind of fake double move
-			}
-			theBoard.ignoreOccupiedFlag = false;
 		}
 	}
 }
