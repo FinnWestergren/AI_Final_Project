@@ -77,7 +77,7 @@ public class TicTacToeBoard implements BoardFeatures {
 	
 
 	@Override
-	public double getBoardValue(int pID) {
+	public int getBoardValue(int pID) {
 		// TODO Auto-generated method stub
 		
 		return 0;

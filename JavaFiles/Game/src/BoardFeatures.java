@@ -5,7 +5,7 @@ public interface BoardFeatures {
 	
 	public ArrayList<Move> getPossibleMoves(int pID);
 	public void performMove(Move m, int pID);
-	public double getBoardValue(int pID);
+	public int getBoardValue(int pID);
 	public boolean checkGameOver();
 	public void undoMove(Move m, int pID);
 }

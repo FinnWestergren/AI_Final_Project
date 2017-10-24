@@ -1,5 +1,5 @@
 
-public class Player {
+public class Player  {
 
 	/*
 	 * this class should be extended by alpha beta, reinforcement learning, and
@@ -10,13 +10,21 @@ public class Player {
 	 */
 
 	public String name;
-
-	public Player() {
+	public int pID;
+	public Player(int pID) {
+		this.pID = pID;
 		name = null;
 	}
 
 	public Player(String name) {
 		this.name = name;
 	}
+	
+	public Move getMove(Board b) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+
 
 }
