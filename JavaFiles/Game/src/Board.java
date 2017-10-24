@@ -123,7 +123,7 @@ public class Board implements BoardFeatures {
 			performWallMove((WallMove) m, pID);
 	}
 
-	//moves your feckin piece
+	//moves yer feckin piece
 	private void performPieceMove(PieceMove m, int pID) {
 		int x = pieces[pID].getCol();
 		int y = pieces[pID].getRow();
