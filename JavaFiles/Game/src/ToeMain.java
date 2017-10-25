@@ -3,12 +3,12 @@ public class ToeMain {
 	
 	public static void main(String[] args) {
 		TicTacToeBoard board;
-		Player[] player = { new Player(), new Player() };
+		Player[] player = { new Player(0), new ToeHumanPlayer(1) };
 		
 		board = new TicTacToeBoard();
 		board.init();
 		player[0] = new Player("dave, the Toolman, taylor");
-		player[1] = new Player("HAL9001");
+		player[1] = new ToeHumanPlayer("HAL9001");
 		
 		String out = board.toString();
 		System.out.println(out);
@@ -16,7 +16,8 @@ public class ToeMain {
 		ToeMove m = new ToeMove(1,2);
 		
 		System.out.println("\n\n");
-		board.performMove(m, 0);
+		board.performMove(((ToeHumanPlayer) player[1]).getMove(), player[1].pID);
+		
 		
 		out = board.toString();
 		System.out.println(out);

@@ -23,7 +23,7 @@ public class TicTacToeBoard implements BoardFeatures {
 		String out = "";
 		
 		for(int i = 0 ; i < cellArray.length ; i++) {
-			for(int j = 0 ; j < cellArray.length ; j++) {
+			for(int j = 0 ; j < cellArray.length - 1 ; j++) {
 				
 				if (cellArray[i][j].occupied == false) {
 					out += "   ";
@@ -37,7 +37,7 @@ public class TicTacToeBoard implements BoardFeatures {
 				out += " | ";
 			}
 			if (i != 2)
-				out += "\n---------------------\n";
+				out += "\n---------------\n";
 		}
 		
 		return out;

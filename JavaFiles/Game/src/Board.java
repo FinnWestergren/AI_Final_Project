@@ -188,19 +188,13 @@ public class Board implements BoardFeatures {
 		return false;
 	}
 
-<<<<<<< HEAD
-	//moves yer feckin piece
-	private void performPieceMove(PieceMove m, int pID) {
-		int x = pieces[pID].getCol();
-		int y = pieces[pID].getRow();
-=======
+
 	// returns whether piece move works, true for possible
 	public boolean checkPieceMove(PieceMove m, int pID) {
 
 		// System.out.println("checking...");
 
 		int x1 = m.getFrom().getX(), y1 = m.getStep1().getY();
->>>>>>> fa6e193f175f22a4e74ef2fd7c6beea7bb650fbf
 
 		Orientation junct1 = Orientation.OPEN;
 		Orientation junct2 = Orientation.OPEN;
