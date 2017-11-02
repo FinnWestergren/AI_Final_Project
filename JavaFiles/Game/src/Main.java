@@ -27,19 +27,19 @@ public class Main extends PApplet {
 	public Board theBoard;
 	public Player[] player = new Player[2];
 	public GameUI gameUI;
-	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = 70;
-	static final String loadBoard = "empty_board.txt";
+	static final int windowSize = 900, margin = 150, boardSize = 9, cellSize = windowSize/(boardSize + 1);
+	static final String loadBoard = "test1.txt";
 	static final String loadBoardPath = "../BoardStrings/" + loadBoard;
 	public int currentPlayer = 0;
+	public int timer = 10;
 
 	public void setup() {
-
 		initGame();
 		updateGraphics();
 	}
 
 	public void draw() {
-		if(!theBoard.checkGameOver()) {
+
 		fill(255, 155, 111, 255);
 		noStroke();
 		rect(-1, -1, width + 2, height + 1);
@@ -47,11 +47,15 @@ public class Main extends PApplet {
 		noStroke();
 		fill(255 * currentPlayer, 255 * currentPlayer, 255 - (currentPlayer * 255));
 		ellipse(margin + (currentPlayer * (windowSize)) - 0.05f * margin, 10, 15, 15);
+		if (player[currentPlayer] instanceof AI_Player ) {
+			timer--;
+			if(timer == 0) {
+			System.out.println("AI_move");
+			performMove(player[currentPlayer].getMove(theBoard));
+			timer = 10;
 		}
-		else {
-			setup();
+		
 		}
-
 	}
 
 	public void initGame() {
@@ -59,27 +63,24 @@ public class Main extends PApplet {
 		background(255, 155, 111);
 		gameUI = new GameUI(cellSize, boardSize);
 		theBoard = new Board(boardSize);
-		player[0] = new HumanPlayer(0);
-		player[1] = new HumanPlayer(1);
+		player[1] = new AlphaBetaPlayer(1);
+		player[0] = new AlphaBetaPlayer(0);
 		theBoard.init(new File(loadBoardPath));
-		// testing addWall method
-		/*
-		 * ---> addWall was replaced with performWallMove a private method used in
-		 * performMove theBoard.addWall(2, 2, Orientation.VERTICAL, 1);
-		 */
-
 	}
 
 	public void updateGraphics() {
-		gameUI.currentPlayer = currentPlayer;
-		gameUI.update(theBoard.toString(), theBoard.pieceLocation[0], theBoard.pieceLocation[1]);
+		if (!theBoard.checkGameOver()) {
+			gameUI.currentPlayer = currentPlayer;
+			gameUI.update(theBoard.toString(), theBoard.pieceLocation[0], theBoard.pieceLocation[1]);
+		} else
+			setup();
 	}
 
 	public void mousePressed() {
 
 		if (player[currentPlayer] instanceof HumanPlayer) {
 			Move m = gameUI.getHighlightedMove();
-			PerformMove(m);
+			performMove(m);
 		}
 	}
 
@@ -89,7 +90,7 @@ public class Main extends PApplet {
 			return;
 
 		if (player[currentPlayer] instanceof HumanPlayer) {
-			
+
 			CoordinatePair from = theBoard.pieceLocation[currentPlayer];
 			CoordinatePair to;
 			switch (keyCode) {
@@ -101,7 +102,8 @@ public class Main extends PApplet {
 				to = from.getNextCoordinatePairFromDirection(Direction.DOWN);
 				break;
 			case LEFT:
-				to = from.getNextCoordinatePairFromDirection(Direction.LEFT);;
+				to = from.getNextCoordinatePairFromDirection(Direction.LEFT);
+				;
 				break;
 			case RIGHT:
 				to = from.getNextCoordinatePairFromDirection(Direction.RIGHT);
@@ -109,32 +111,44 @@ public class Main extends PApplet {
 			default:
 				return;
 			}
-
-			PerformMove(new PieceMove(from,to));
+			performMove(new PieceMove(from, to));
 		}
 
 	}
 
-	private void PerformMove(Move move) {
+	private void performMove(Move move) {
 		if (move == null)
 			return;
+		
+		if (player[currentPlayer] instanceof HumanPlayer) {
 
-		if (theBoard.checkPossible(move, currentPlayer)) {
-			boolean doubleMove = false;
-			
-			if(move instanceof PieceMove) {
-				if(theBoard.checkOccupied(((PieceMove) move).getTo()))
-					doubleMove = true;
+			if (!theBoard.checkPossible(move, currentPlayer))
+				System.out.println("wtf mate");
+			else {
+				boolean doubleMove = false;
+
+				if (move instanceof PieceMove) {
+					if (theBoard.checkOccupied(((PieceMove) move).getTo()))
+						doubleMove = true;
+				}
+
+				theBoard.performMove(move, currentPlayer);
+
+				
+				System.out.println("Player " + (currentPlayer + 1) + "'s manhattan distance: "
+						+ theBoard.manhattanDistance(currentPlayer));
+
+				if (!doubleMove)
+					currentPlayer = (currentPlayer + 1) % 2;
+				updateGraphics();
 			}
+		}
 
+		else {
 			theBoard.performMove(move, currentPlayer);
-
-			updateGraphics();
-			System.out.println(
-					"Player " + (currentPlayer + 1) + "'s manhattan distance: " + theBoard.manhattanDistance(currentPlayer));
 			
-			if(!doubleMove)
 			currentPlayer = (currentPlayer + 1) % 2;
+			updateGraphics();
 		}
 	}
 }
