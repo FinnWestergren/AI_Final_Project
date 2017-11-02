@@ -14,8 +14,33 @@ public class TicTacToeBoard implements BoardFeatures {
 		for(int i = 0 ; i < cellArray.length ; i++) {
 			for(int j = 0 ; j < cellArray.length ; j++) {
 				cellArray[i][j] = new ToeCell();
+				cellArray[i][j].occupied = false;
 			}
 		}
+	}
+	
+	public String toString() {
+		String out = "";
+		
+		for(int i = 0 ; i < cellArray.length ; i++) {
+			for(int j = 0 ; j < cellArray.length - 1 ; j++) {
+				
+				if (cellArray[i][j].occupied == false) {
+					out += "   ";
+				}
+				if (cellArray[i][j].occupiedO == true) {
+					out += " O ";
+				}
+				if (cellArray[i][j].occupiedX == true) {
+					out += " X ";
+				}
+				out += " | ";
+			}
+			if (i != 2)
+				out += "\n---------------\n";
+		}
+		
+		return out;
 	}
 	
 	@Override
@@ -36,11 +61,18 @@ public class TicTacToeBoard implements BoardFeatures {
 
 	@Override
 	public void performMove(Move m, int pID) {
-		if (pID == PLAYER_X) {
-			
-		}
-		// TODO Auto-generated method stub
+		int x, y;
+		x = ((ToeMove) m).getCol();
+		y = ((ToeMove) m).getRow();
 		
+		if (pID == PLAYER_X) {
+			cellArray[x][y].occupiedX = true;
+			cellArray[x][y].occupied = true;
+		}
+		if (pID == PLAYER_O) {
+			cellArray[x][y].occupiedO = true;
+			cellArray[x][y].occupied = true;
+		}
 	}
 	
 
@@ -57,7 +89,7 @@ public class TicTacToeBoard implements BoardFeatures {
 	}
 	
 	public boolean checkToeMove(ToeMove m) {
-		if (cellArray[m.col][m.row].occupiedX == true || cellArray[m.col][m.row].occupiedO == true)
+		if (cellArray[m.col][m.row].occupied == true)
 			return false;
 		else 
 			return true;
@@ -65,8 +97,14 @@ public class TicTacToeBoard implements BoardFeatures {
 
 	@Override
 	public boolean checkGameOver() {
-		// TODO Auto-generated method stub
-		return false;
+		for (int i = 0 ; i < cellArray.length ; i++) {
+			for (int j = 0 ; j < cellArray.length ; j++) {
+				if (cellArray[i][j].occupied == false)
+					return false;
+			}
+		}
+		
+		return true;
 	}
 
 	@Override

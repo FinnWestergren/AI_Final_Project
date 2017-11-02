@@ -217,6 +217,7 @@ public class Board implements BoardFeatures {
 		return false;
 	}
 
+
 	// returns whether piece move works, true for possible
 	public boolean checkPieceMove(PieceMove m, int pID) {
 
