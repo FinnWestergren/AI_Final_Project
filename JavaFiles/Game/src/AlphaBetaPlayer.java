@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class AlphaBetaPlayer extends Player implements AI_Player {
-	int maxDepth = 0;
+	int maxDepth =2;
 
 	public AlphaBetaPlayer(int pID) {
 		super(pID);
@@ -9,7 +9,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 	}
 
 	@Override
-	public Move getMove(Board board) {
+	public Move getMove(BoardFeatures board) {
 		Move out = null;
 		int max = Integer.MIN_VALUE;
 		int i =0 ;
@@ -27,7 +27,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 		return out;
 	}
 	
-	public int minValue(Board board, int d, int alpha, int beta) {
+	public int minValue(BoardFeatures board, int d, int alpha, int beta) {
 		int a = alpha;
 		int b = beta;
 		
@@ -39,13 +39,13 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 			if(v<b) b = v;
 			if(b<= a) {
 				//System.out.println("pruned");
-				break;
+				//break;
 			}
 		}
 		return b;
 	}
 	
-	public int maxValue(Board board, int d, int alpha, int beta) {
+	public int maxValue(BoardFeatures board, int d, int alpha, int beta) {
 		
 		int a = alpha;
 		int b = beta;
@@ -59,7 +59,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 			if(v>a) a = v;
 			if(b<=a) {
 				//System.out.println("pruned");
-				break;
+				//break;
 			}
 		}
 		
@@ -67,7 +67,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 	}
 	
 	
-	public ArrayList<Move> suggestedMoves(Board b, int depth , int p){
+	public ArrayList<Move> suggestedMoves(BoardFeatures b, int depth , int p){
 		
 		if (depth == 0 || depth == 1) {
 			return b.getPossibleMoves(p);
@@ -92,5 +92,6 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 		return mList;
 		
 	}
+
 	
 }

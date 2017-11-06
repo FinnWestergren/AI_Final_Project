@@ -1,6 +1,6 @@
 
 public interface AI_Player {
 
-	public Move getMove(Board b);
+	public Move getMove(BoardFeatures b);
 	
 }

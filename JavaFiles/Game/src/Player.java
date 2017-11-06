@@ -20,7 +20,7 @@ public class Player  {
 		this.name = name;
 	}
 	
-	public Move getMove(Board b) {
+	public Move getMove(BoardFeatures b) {
 		// TODO Auto-generated method stub
 		return null;
 	}
