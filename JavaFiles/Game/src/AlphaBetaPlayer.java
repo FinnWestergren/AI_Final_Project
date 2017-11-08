@@ -39,7 +39,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 			if(v<b) b = v;
 			if(b<= a) {
 				//System.out.println("pruned");
-				//break;
+				break;
 			}
 		}
 		return b;
@@ -59,7 +59,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 			if(v>a) a = v;
 			if(b<=a) {
 				//System.out.println("pruned");
-				//break;
+				break;
 			}
 		}
 		
