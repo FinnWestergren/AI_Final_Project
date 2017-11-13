@@ -1,3 +1,4 @@
+import java.util.Scanner;
 
 public class Player  {
 
@@ -21,8 +22,10 @@ public class Player  {
 	}
 	
 	public Move getMove(BoardFeatures b) {
+		Scanner scan = new Scanner(System.in);
+		return new ToeMove(scan.nextInt(), scan.nextInt());
 		// TODO Auto-generated method stub
-		return null;
+	
 	}
 	
 

@@ -119,18 +119,18 @@ public class Main extends PApplet {
 	private void performMove(Move move) {
 		if (move == null)
 			return;
-		
+		boolean doubleMove = false;
+		if (move instanceof PieceMove) {
+			if (theBoard.checkOccupied(((PieceMove) move).getTo()))
+				doubleMove = true;
+		}
 		if (player[currentPlayer] instanceof HumanPlayer) {
-
-			if (!theBoard.checkPossible(move, currentPlayer))
+			if (!theBoard.checkPossible(move, currentPlayer) && !doubleMove)
 				System.out.println("wtf mate");
 			else {
-				boolean doubleMove = false;
+				
 
-				if (move instanceof PieceMove) {
-					if (theBoard.checkOccupied(((PieceMove) move).getTo()))
-						doubleMove = true;
-				}
+				
 
 				theBoard.performMove(move, currentPlayer);
 

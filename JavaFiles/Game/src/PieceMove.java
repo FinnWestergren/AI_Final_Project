@@ -45,12 +45,20 @@ public class PieceMove extends Move {
 	}
 
 	public CoordinatePair getTo() {
-		if(step2 == null) return step1;
+		if (step2 == null)
+			return step1;
 		return step2;
 	}
 
 	public PieceMove getReverse() {
 		return new PieceMove(getTo(), from);
+	}
+
+	public boolean equals(Move m) {
+		if (!(m instanceof PieceMove))
+			return false;
+		PieceMove pm = (PieceMove) m;
+		return (pm.getTo() == getTo() && pm.getFrom() == getFrom());
 	}
 
 }
