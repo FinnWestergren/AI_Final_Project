@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class AlphaBetaPlayer extends Player implements AI_Player {
-	int maxDepth =2;
+	int maxDepth =1;
 
 	public AlphaBetaPlayer(int pID) {
 		super(pID);
@@ -39,7 +39,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 			if(v<b) b = v;
 			if(b<= a) {
 				//System.out.println("pruned");
-				//break;
+				break;
 			}
 		}
 		return b;
@@ -59,7 +59,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 			if(v>a) a = v;
 			if(b<=a) {
 				//System.out.println("pruned");
-				//break;
+				break;
 			}
 		}
 		
