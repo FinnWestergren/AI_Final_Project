@@ -27,7 +27,7 @@ public class Main extends PApplet {
 	public Board theBoard;
 	public Player[] player = new Player[2];
 	public GameUI gameUI;
-	static final int windowSize = 900, margin = 150, boardSize = 9, cellSize = windowSize/(boardSize + 1);
+	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize/(boardSize + 1);
 	static final String loadBoard = "empty_board.txt";
 	static final String loadBoardPath = "../BoardStrings/" + loadBoard;
 	public int currentPlayer = 0;
