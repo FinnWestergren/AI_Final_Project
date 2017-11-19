@@ -15,6 +15,8 @@ public class Synapse {
 		this.to = to;
 		this.from = from;
 		this.weight = weight;
+		to.addFrom(this);
+		from.addTo(this);
 	}
 	
 	// hey mang, this returns teh weighted value of the "to Node" for this synapse 
@@ -24,6 +26,6 @@ public class Synapse {
 	// this combined with the activation function method end up being recursive
 	public double getValue() {
 		
-		return to.activationFunction() * weight;
+		return from.activationFunction() * weight;
 	}
 }

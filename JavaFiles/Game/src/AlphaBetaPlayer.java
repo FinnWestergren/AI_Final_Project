@@ -1,12 +1,9 @@
 import java.util.ArrayList;
 
 public class AlphaBetaPlayer extends Player implements AI_Player {
-<<<<<<< HEAD
-	int maxDepth = 1;
-=======
-	int maxDepth =1;
 
->>>>>>> 8ca67085bac714f6966fdc549b161d718e96fa48
+	int maxDepth = 1;
+
 	public AlphaBetaPlayer(int pID) {
 		super(pID);
 		// TODO Auto-generated constructor stub
@@ -42,6 +39,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 					clearPrevious();
 					max = v;
 					out = m;
+					
 				}
 			}
 			i++;
@@ -54,7 +52,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 	public int minValue(BoardFeatures board, int d, int alpha, int beta) {
 		int a = alpha;
 		int b = beta;
-<<<<<<< HEAD
+
 
 		if (board.checkGameOver() || d == maxDepth)
 			return board.getBoardValue(pID);
@@ -66,17 +64,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 				b = v;
 			if (b <= a) {
 				// System.out.println("pruned");
-=======
-		
-		if (board.checkGameOver() || d == maxDepth) return board.getBoardValue(pID);
-		for(Move m: suggestedMoves(board, d+1,(pID + 1) %2)) {
-			board.performMove(m,(pID + 1) %2);
-			int v = maxValue(board, d+1, a, b);
-			board.undoMove(m, (pID + 1) %2);
-			if(v<b) b = v;
-			if(b<= a) {
-				//System.out.println("pruned");
->>>>>>> 8ca67085bac714f6966fdc549b161d718e96fa48
+
 				break;
 			}
 		}
@@ -99,16 +87,12 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 			board.performMove(m, pID);
 			int v = minValue(board, d + 1, alpha, beta);
 			board.undoMove(m, pID);
-<<<<<<< HEAD
+
 			if (v > a)
 				a = v;
 			if (b <= a) {
 				// System.out.println("pruned");
-=======
-			if(v>a) a = v;
-			if(b<=a) {
-				//System.out.println("pruned");
->>>>>>> 8ca67085bac714f6966fdc549b161d718e96fa48
+
 				break;
 			}
 		}

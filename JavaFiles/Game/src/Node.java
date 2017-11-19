@@ -6,7 +6,8 @@ public class Node {
 	private ArrayList<Synapse> fromList;
 	
 	public Node() {
-		
+		toList = new ArrayList<Synapse>();
+		fromList = new ArrayList<Synapse>();
 	}
 	
 	public Node(ArrayList<Synapse> toList, ArrayList<Synapse> fromList) {
@@ -22,8 +23,8 @@ public class Node {
 		double weightedSum = 0;
 		double functionValue = 0;
 		
-		for (int i = 0 ; i < toList.size() ; i++) {
-			weightedSum += toList.get(i).getValue();
+		for (int i = 0 ; i < fromList.size() ; i++) {
+			weightedSum += fromList.get(i).getValue();
 		}
 		
 		functionValue = 1 /(1 + Math.pow(Math.E, -weightedSum));

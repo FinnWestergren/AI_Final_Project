@@ -24,7 +24,7 @@ public class Board implements BoardFeatures {
 
 	// TODO refactor using new coord pair class
 
-	public void init(File readFile) {
+	public void init(String readFile) {
 		allWallMoves.clear();
 		for (int j = 0; j < boardSize; j++) {
 			for (int i = 0; i < boardSize; i++) {
@@ -39,7 +39,7 @@ public class Board implements BoardFeatures {
 			}
 		}
 		initAllWallMoves();
-		try {
+		
 			Scanner boardScanner = new Scanner(readFile);
 			int x0 = boardScanner.nextInt();
 			int y0 = boardScanner.nextInt();
@@ -71,12 +71,9 @@ public class Board implements BoardFeatures {
 					}
 				}
 			boardScanner.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 
-	}
+	
 
 	private void initAllWallMoves() {
 		//incorrect!! needs to be fixed

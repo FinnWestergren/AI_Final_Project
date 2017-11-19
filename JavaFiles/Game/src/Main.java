@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import processing.core.PApplet;
 
@@ -27,7 +29,7 @@ public class Main extends PApplet {
 	public Board theBoard;
 	public Player[] player = new Player[2];
 	public GameUI gameUI;
-	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize/(boardSize + 1);
+	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize / (boardSize + 1);
 	static final String loadBoard = "empty_board.txt";
 	static final String loadBoardPath = "../BoardStrings/" + loadBoard;
 	public int currentPlayer = 0;
@@ -47,14 +49,14 @@ public class Main extends PApplet {
 		noStroke();
 		fill(255 * currentPlayer, 255 * currentPlayer, 255 - (currentPlayer * 255));
 		ellipse(margin + (currentPlayer * (windowSize)) - 0.05f * margin, 10, 15, 15);
-		if (player[currentPlayer] instanceof AI_Player ) {
+		if (player[currentPlayer] instanceof AI_Player) {
 			timer--;
-			if(timer == 0) {
-			System.out.println("AI_move");
-			performMove(player[currentPlayer].getMove(theBoard));
-			timer = 10;
-		}
-		
+			if (timer == 0) {
+				System.out.println("AI_move");
+				performMove(player[currentPlayer].getMove(theBoard));
+				timer = 10;
+			}
+
 		}
 	}
 
@@ -64,8 +66,24 @@ public class Main extends PApplet {
 		gameUI = new GameUI(cellSize, boardSize);
 		theBoard = new Board(boardSize);
 		player[1] = new AlphaBetaPlayer(1);
-		player[0] = new HumanPlayer(0);
-		theBoard.init(new File(loadBoardPath));
+		player[0] = new RandomPlayer(0);
+		File file = new File(loadBoardPath);
+
+		String fileString = "";
+		Scanner fileScanner;
+		try {
+
+			fileScanner = new Scanner(file);
+			while (fileScanner.hasNextLine()) {
+				fileString += fileScanner.nextLine() + "\n";
+			}
+			System.out.println(fileString);
+			theBoard.init(fileString);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	public void updateGraphics() {
@@ -128,13 +146,9 @@ public class Main extends PApplet {
 			if (!theBoard.checkPossible(move, currentPlayer) && !doubleMove)
 				System.out.println("wtf mate");
 			else {
-				
-
-				
 
 				theBoard.performMove(move, currentPlayer);
 
-				
 				System.out.println("Player " + (currentPlayer + 1) + "'s manhattan distance: "
 						+ theBoard.manhattanDistance(currentPlayer));
 
@@ -146,7 +160,7 @@ public class Main extends PApplet {
 
 		else {
 			theBoard.performMove(move, currentPlayer);
-			
+
 			currentPlayer = (currentPlayer + 1) % 2;
 			updateGraphics();
 		}
