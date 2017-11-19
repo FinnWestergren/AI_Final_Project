@@ -122,6 +122,7 @@ public class Board implements BoardFeatures {
 		int y = cp.getY();
 		if (y < boardSize && y > -1) { // if not gameover
 			cellArray[x][y].occupied = true;
+			cellArray[x][y].occupiedBy = pID;
 
 		} else {
 			gameOver = true;
@@ -330,6 +331,7 @@ public class Board implements BoardFeatures {
 
 		if (withinBounds(m.getFrom())) {
 			cellArray[m.getFrom().getX()][m.getFrom().getY()].occupied = false;
+			cellArray[m.getFrom().getX()][m.getFrom().getY()].occupiedBy = -1;
 			setPiece(m.getTo(), pID);
 		}
 	}
