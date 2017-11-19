@@ -2,8 +2,8 @@ import java.util.ArrayList;
 
 public class Node {
 
-	private ArrayList<Synapse> toList;
-	private ArrayList<Synapse> fromList;
+	protected ArrayList<Synapse> toList;
+	protected ArrayList<Synapse> fromList;
 	
 	public Node() {
 		toList = new ArrayList<Synapse>();
