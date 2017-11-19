@@ -41,4 +41,10 @@ public class Node {
 	public void addFrom(Synapse from) {
 		fromList.add(from);
 	}
+	
+	public String toString() {
+		String out = "";
+		for(Synapse s: toList) out+= s.weight + " ";
+		return out;
+	}
 }
