@@ -27,9 +27,10 @@ public class Synapse {
 	public double getValue() {
 		
 		return from.activationFunction() * weight;
-<<<<<<< HEAD
+
 	}
-=======
-	}   
->>>>>>> 981c23412866c9d71e63bdd8ba458074ccc26a23
+	
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
 }
