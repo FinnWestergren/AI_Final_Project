@@ -18,19 +18,16 @@ public class FeatureLayer extends NeuralLayer {
 	private void updateWallFeatures(Board board) {
 		for (int i = 0; i < WALLFEAT/2; i ++) {
 			int j = i * 2;
-			FeatureNode horiz, vert;
+			FeatureNode horiz = new FeatureNode(0), vert = new FeatureNode(0);
+			
 			switch(board.junctArray[i%8][i/8].getOrientation()) {
-			case OPEN:
-				horiz = new featureNode(0);
-				vert = new featureNode(0);
-				break;
 			case VERTICAL:
-				horiz = new featureNode(-1);
-				vert = new featureNode(1);
+				horiz = new FeatureNode(-1);
+				vert = new FeatureNode(1);
 				break;
 			case HORIZONTAL:
-				horiz = new featureNode(1);
-				vert = new featureNode(-1);
+				horiz = new FeatureNode(1);
+				vert = new FeatureNode(-1);
 				break;
 			default:
 				break;

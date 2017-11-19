@@ -12,11 +12,10 @@ public class NeuralLayer {
 		}
 	}
 	
-	public void connectInList(Node prev) {
+	public void connectBackward(Node prev) {
 		for (Node local : nodeList) {
 			Synapse s = new Synapse(prev, local, Math.random());
 		}
 	}
-	
 	
 }
