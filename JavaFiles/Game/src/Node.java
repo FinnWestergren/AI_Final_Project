@@ -17,7 +17,7 @@ public class Node {
 	
 	// feature nodes override activationFuntion
 	
-	//calls the get value method in synapse which gets the weighted value of the previous "to node"
+	//calls the get value method in synapse which gets the weighted value of the previous "from node"
 	// that value is determined with activationFunction()
 	public double activationFunction() {
 		double weightedSum = 0;

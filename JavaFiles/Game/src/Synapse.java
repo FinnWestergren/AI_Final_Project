@@ -19,7 +19,7 @@ public class Synapse {
 		from.addTo(this);
 	}
 	
-	// hey mang, this returns teh weighted value of the "to Node" for this synapse 
+	// hey mang, this returns teh weighted value of the "from Node" for this synapse 
 	// i figured this would make it easier for the activation function method in Node
 	// now the synapses will handle their own weighted values
 	//
@@ -27,5 +27,9 @@ public class Synapse {
 	public double getValue() {
 		
 		return from.activationFunction() * weight;
+<<<<<<< HEAD
 	}
+=======
+	}   
+>>>>>>> 981c23412866c9d71e63bdd8ba458074ccc26a23
 }
