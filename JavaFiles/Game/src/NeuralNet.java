@@ -1,23 +1,53 @@
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class NeuralNet {
 	
-	Node[] inputLayer;
+	FeatureLayer inputLayer;
+	ArrayList<NeuralLayer> layers = new ArrayList<NeuralLayer>();
 	
-	//@param Array of input features to the net
-	public NeuralNet(int[] features) {
-		setInputLayer(features);
+	public NeuralNet(Board b, int pID, String layout) {
+		inputLayer = new FeatureLayer(b, pID);
+		constructNetwork(layout);
 	}
-
-	private void setInputLayer(int[] features) {
-		for(int i = 0; i < features.length; i++) {
-			
+	
+	public void constructNetwork(String layout) {
+		//get values from layout
+		Scanner reader = new Scanner(layout);
+		int numLayers, index;
+		index = 0;
+		int[] nodesPerLayer;
+		
+		numLayers = reader.nextInt();
+		nodesPerLayer = new int[numLayers];
+		
+		while (reader.hasNextInt()) {
+			nodesPerLayer[index] = reader.nextInt();
 		}
 		
+		//initialize NeuralLayers
+		for (int i = 0 ; i < numLayers ; i++) {
+			layers.add(new NeuralLayer(nodesPerLayer[i]));
+		}
+		//add feature layer to beginning of hiddenLayers arrayList
+		layers.add(0, inputLayer);
+		layers.add(new NeuralLayer(1));
+		
+		
+		//connect Layers
+		for (int i = layers.size() ; i >= 0 ; i--) {
+			for (int j = 0 ; j < nodesPerLayer[i] ; j++) {
+				layers.get(i).connectBackward(layers.get(i-1).nodeList.get(j));
+			}
+		}
 	}
-
-	public Move getMove(Board s) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	/*
+	public void conectLayer(NeuralLayer Next) {
+		for(Node local : nodeList) {
+			connectBackward(local);
+		}
 	}
+	*/
 
 }

@@ -30,7 +30,6 @@ public class FeatureLayer extends NeuralLayer {
 	private void updateWallFeatures() {
 		for (int i = 0; i < WALLFEAT / 2; i++) {
 			int j = i * 2;
-
 			int horiz = 0 , vert = 0;
 
 			switch (board.junctArray[i % 8][i / 8].getOrientation()) {
@@ -50,7 +49,6 @@ public class FeatureLayer extends NeuralLayer {
 			FeatureNode vNode = (FeatureNode) nodeList.get(j);
 			hNode.setFeature(horiz);
 			vNode.setFeature(vert);
-
 		}
 	}
 
