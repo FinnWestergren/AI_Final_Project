@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class NeuralLayer {
 	
-	private int size;
+	protected int size;
 	public ArrayList<Node> nodeList = new ArrayList<Node>();
 	
 	public NeuralLayer(int size) {
@@ -18,5 +18,5 @@ public class NeuralLayer {
 		}
 	}
 	
-
+	
 }
