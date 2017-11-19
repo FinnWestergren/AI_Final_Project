@@ -17,13 +17,13 @@ public class Synapse {
 		this.weight = weight;
 	}
 	
-	// hey mang, this returns teh weighted value of the "to Node" for this synapse 
+	// hey mang, this returns teh weighted value of the "from Node" for this synapse 
 	// i figured this would make it easier for the activation function method in Node
 	// now the synapses will handle their own weighted values
 	//
 	// this combined with the activation function method end up being recursive
 	public double getValue() {
 		
-		return to.activationFunction() * weight;
-	}
+		return from.activationFunction() * weight;
+	}   
 }

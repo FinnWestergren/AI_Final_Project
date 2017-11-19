@@ -16,14 +16,14 @@ public class Node {
 	
 	// feature nodes override activationFuntion
 	
-	//calls the get value method in synapse which gets the weighted value of the previous "to node"
+	//calls the get value method in synapse which gets the weighted value of the previous "from node"
 	// that value is determined with activationFunction()
 	public double activationFunction() {
 		double weightedSum = 0;
 		double functionValue = 0;
 		
-		for (int i = 0 ; i < toList.size() ; i++) {
-			weightedSum += toList.get(i).getValue();
+		for (int i = 0 ; i < fromList.size() ; i++) {
+			weightedSum += fromList.get(i).getValue();
 		}
 		
 		functionValue = 1 /(1 + Math.pow(Math.E, -weightedSum));
