@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class AlphaBetaPlayer extends Player implements AI_Player {
 
-	int maxDepth = 1;
+	int maxDepth = 3;
 
 	public AlphaBetaPlayer(int pID) {
 		super(pID);

@@ -32,6 +32,8 @@ public class Main extends PApplet {
 	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize / (boardSize + 1);
 	static final String loadBoard = "empty_board.txt";
 	static final String loadBoardPath = "../BoardStrings/" + loadBoard;
+	static final String net = "test/";
+	static final String netPath = "../Network/" +net;
 	public int currentPlayer = 0;
 	public int timer = 10;
 
@@ -65,8 +67,20 @@ public class Main extends PApplet {
 		background(255, 155, 111);
 		gameUI = new GameUI(cellSize, boardSize);
 		theBoard = new Board(boardSize);
-		player[1] = new AlphaBetaPlayer(1);
-		player[0] = new RandomPlayer(0);
+		player[1] = new MachineLearningPlayer(1);
+		player[0] = new HumanPlayer(0);
+		initBoard();
+		initNeuralNet(1);
+
+	}
+
+	private void initNeuralNet(int pID) {
+		File layoutFile = new File(netPath + "layout.txt");
+		File weightsFile = new File(netPath + "weights.txt");
+		((MachineLearningPlayer) player[pID]).init(theBoard, weightsFile, layoutFile);
+	}
+
+	private void initBoard() {
 		File file = new File(loadBoardPath);
 
 		String fileString = "";
@@ -83,7 +97,7 @@ public class Main extends PApplet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 	}
 
 	public void updateGraphics() {
