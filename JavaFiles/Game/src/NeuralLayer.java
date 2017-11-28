@@ -20,6 +20,7 @@ public class NeuralLayer {
 		}
 	}
 
+
 	public String toString() {
 		String out = "";
 		for(Node n : nodeList) out += n.toString() + "\n";
