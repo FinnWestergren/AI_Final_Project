@@ -30,5 +30,11 @@ public class NeuralLayer {
 		// TODO Auto-generated method stub
 		return nodeList.get(j);
 	}
+
+	public double getTotalError(double target, double errorSum) {
+		double out = 0; 
+		for(Node n : nodeList) out += n.getErrorPropagation(target, errorSum);
+		return out;
+	}
 	
 }

@@ -8,17 +8,16 @@ public class NeuralNet {
 	FeatureLayer inputLayer;
 	ArrayList<NeuralLayer> layers = new ArrayList<NeuralLayer>();
 
-	public NeuralNet(Board b, int pID,File layout, File weights){
+	public NeuralNet(Board b, int pID, File layout, File weights) {
 		inputLayer = new FeatureLayer(b, pID);
 		constructNetwork(layout);
 		initializeWeightsFromFile(weights);
 	}
-	
-	//TODO write a get output 0 - 1
-	//update method uses backpropagation
-	
-	
-	private void constructNetwork(File layout){
+
+	// TODO write a get output 0 - 1
+	// update method uses backpropagation
+
+	private void constructNetwork(File layout) {
 		// get values from layout
 		Scanner reader;
 		try {
@@ -46,9 +45,9 @@ public class NeuralNet {
 			layers.add(new NeuralLayer(1)); // outputLayer
 
 			// connect Layers
-			for (int i = layers.size()-1; i >= 1; i--) {
-				for (Node j : layers.get(i-1).nodeList) {
-					System.out.println("layer: " + i + " totalSize: " +layers.get(i-1).nodeList.size());
+			for (int i = layers.size() - 1; i >= 1; i--) {
+				for (Node j : layers.get(i - 1).nodeList) {
+					System.out.println("layer: " + i + " totalSize: " + layers.get(i - 1).nodeList.size());
 					layers.get(i).connectBackward(j);
 				}
 			}
@@ -69,7 +68,7 @@ public class NeuralNet {
 				for (int j = 0; j < layerSize; j++) {
 					int inListSize = layers.get(i).getNode(j).toList.size();
 					for (int k = 0; k < inListSize; k++) {
-						System.out.println("i " + i + " j" + j + " k " + k );
+						System.out.println("i " + i + " j" + j + " k " + k);
 						String next = weightScanner.next();
 						boolean hardCoded = (next.contains("h"));
 						next.replaceAll("h", "");
@@ -114,9 +113,24 @@ public class NeuralNet {
 
 		out += layers.size() - 2 + "\n";
 		// start at layer 1 to avoid printing the input layer
-		for (int i = 1; i < layers.size()-1; i++) {
+		for (int i = 1; i < layers.size() - 1; i++) {
 			out += layers.get(i).size + " ";
 		}
 		return out;
 	}
+
+	public void updateNetworkWeights(double target, double alpha) {
+		double layerError = 0;
+		for (int l = layers.size() - 1; l >= 0; l--) {
+			if (l < layers.size() - 1) {
+				for(Node n: layers.get(l).nodeList) {
+					for(Synapse s: n.toList) {
+						s.updateWeight(alpha);
+					}
+				}
+			}
+			layerError = layers.get(l).getTotalError(layerError, target);
+		}
+	}
+
 }

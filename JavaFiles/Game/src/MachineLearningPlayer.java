@@ -5,11 +5,10 @@ import java.util.Scanner;
 
 public class MachineLearningPlayer extends Player implements AI_Player {
 	
-	
 	private NeuralNet net;
 	private File weightsFile, layoutFile;
 
-	public MachineLearningPlayer( int pID) {
+	public MachineLearningPlayer(int pID) {
 		super(pID);
 	}
 	
@@ -40,10 +39,5 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
-	
-	
-	
 }
