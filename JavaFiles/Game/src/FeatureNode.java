@@ -10,6 +10,7 @@ public class FeatureNode extends Node {
 	
 	public void setFeature(double feature) {
 		this.feature = feature;
+		lastOutput = feature;
 	}
 	
 	/**
