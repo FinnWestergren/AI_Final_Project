@@ -53,7 +53,6 @@ public class Synapse {
 
 	public void updateWeight(double alpha) {
 		weight += alpha * to.lastErrorCalc * from.lastOutput;
-		
 	}
 
 

@@ -1,29 +1,28 @@
-	/*
-	 * Machine Learner Class
-	 * Implements Neural Net, Node, Synapse, Neural Layer...
-	 * 
-	 * getMove Method overrides Player getMove
-	 * getMove will contain SARSA 
-	 * 
-	 * 	SARSA should...
-	 * 	init double max
-	 * 	init move m
-	 * 	for each action a (get all possible moves)
-	 * 		perform action(move) a
-	 * 		get Value of s' upon performing action(move) a
-	 * 		if value of s' > max, then assign action(move) a to move m
-	 * 		
-	 * 	
-	 */
+/*
+ * Machine Learner Class
+ * Implements Neural Net, Node, Synapse, Neural Layer...
+ * 
+ * getMove Method overrides Player getMove
+ * getMove will contain SARSA 
+ * 
+ * 	SARSA should...
+ * 	init double max
+ * 	init move m
+ * 	for each action a (get all possible moves)
+ * 		perform action(move) a
+ * 		get Value of s' upon performing action(move) a
+ * 		if value of s' > max, then assign action(move) a to move m
+ * 		
+ * 	
+ */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
 public class MachineLearningPlayer extends Player implements AI_Player {
-	
+
 	private NeuralNet net;
 	private Board b;
 	private File weightsFile, layoutFile;
@@ -31,7 +30,7 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	public MachineLearningPlayer(int pID) {
 		super(pID);
 	}
-	
+
 	public void init(Board b, File weightsFile, File layoutFile) {
 		this.b = b;
 		this.weightsFile = weightsFile;
@@ -71,7 +70,6 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
 		try {
 			PrintWriter weightPrinter = new PrintWriter(weightsFile);
 			weightPrinter.write(weights);
@@ -81,5 +79,4 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 			e.printStackTrace();
 		}
 	}
-		
 }
