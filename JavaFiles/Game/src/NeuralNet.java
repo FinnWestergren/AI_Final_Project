@@ -126,6 +126,11 @@ public class NeuralNet {
 		}
 		return out;
 	}
+	
+	public double getOutput(Board b) {
+		inputLayer.updateFeatures(b);
+		return layers.get(layers.size()-1).getNode(0).activationFunction();
+	}
 
 	public void updateNetworkWeights(double target, double alpha) {
 		double layerError = 0;

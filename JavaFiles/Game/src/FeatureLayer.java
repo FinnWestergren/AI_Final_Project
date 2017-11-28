@@ -12,16 +12,17 @@ public class FeatureLayer extends NeuralLayer {
 		
 		
 		this.pID = pID; 
-		this.board = board;
+		
 		
 		nodeList = new ArrayList<Node>();
 		for(int i = 0; i < size; i++) {
 			nodeList.add(new FeatureNode(0));
 		}
-		updateFeatures();
+		updateFeatures(board);
 	}
 	
-	private void updateFeatures() {
+	public void updateFeatures(Board b) {
+		this.board = b;
 		updateWallFeatures();
 		updateCellFeatures();
 		updateWallsLeftFeatures();

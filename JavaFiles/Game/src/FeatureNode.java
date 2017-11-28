@@ -18,6 +18,7 @@ public class FeatureNode extends Node {
 	 * 
 	 * @return feature
 	 */
+	
 	@Override
 	public double activationFunction() {
 		return feature;
