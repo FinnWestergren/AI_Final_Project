@@ -17,7 +17,14 @@ public class FeatureNode extends Node {
 	 * 
 	 * @return feature
 	 */
+	@Override
 	public double activationFunction() {
 		return feature;
 	}
+	
+	@Override
+	public void addFrom(Synapse from) {
+		return;
+	}
+	
 }

@@ -44,7 +44,7 @@ public class Node {
 	
 	public String toString() {
 		String out = "";
-		for(Synapse s: toList) out+= s.weight + " ";
+		for(Synapse s: toList) out+= s.getWeight() + " ";
 		return out;
 	}
 }

@@ -9,12 +9,14 @@ public class FeatureLayer extends NeuralLayer {
 
 	public FeatureLayer(Board board, int pID) {
 		super(WALLFEAT + CELLFEAT + WALLSLEFTFEAT + MANHATTANFEAT);
+		
+		
 		this.pID = pID; 
 		this.board = board;
 		
-		nodeList = new ArrayList<Node>(size);
-		for(Node n : nodeList) {
-			n = new FeatureNode(0);
+		nodeList = new ArrayList<Node>();
+		for(int i = 0; i < size; i++) {
+			nodeList.add(new FeatureNode(0));
 		}
 		updateFeatures();
 	}

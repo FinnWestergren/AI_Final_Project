@@ -3,7 +3,8 @@ public class Synapse {
 	
 	Node to;
 	Node from;
-	public double weight;
+	private boolean hardCoded = false;
+	private double weight;
 	
 	public Synapse() {
 		to = new Node();
@@ -15,6 +16,10 @@ public class Synapse {
 		this.to = to;
 		this.from = from;
 		this.weight = weight;
+		connect();
+	}
+	
+	public void connect() {
 		to.addFrom(this);
 		from.addTo(this);
 	}
@@ -31,7 +36,21 @@ public class Synapse {
 	}
 	
 	public void setWeight(double weight) {
+		if(!hardCoded)
 		this.weight = weight;
 	}
+
+	public void setHardCoded(boolean b) {
+		// TODO Auto-generated method stub
+		hardCoded = b;
+		
+	}
+
+	public double getWeight() {
+		// TODO Auto-generated method stub
+		return weight;
+	}
+
+
 }
 
