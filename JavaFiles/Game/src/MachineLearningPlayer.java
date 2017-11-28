@@ -1,4 +1,3 @@
-
 /*
  * Machine Learner Class
  * Implements Neural Net, Node, Synapse, Neural Layer...
@@ -19,11 +18,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MachineLearningPlayer extends Player implements AI_Player {
 
 	private NeuralNet net;
+	private Board b;
 	private File weightsFile, layoutFile;
 
 	public MachineLearningPlayer(int pID) {
@@ -31,12 +32,33 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	}
 
 	public void init(Board b, File weightsFile, File layoutFile) {
+		this.b = b;
 		this.weightsFile = weightsFile;
 		this.layoutFile = layoutFile;
 		net = new NeuralNet(b, pID, layoutFile, weightsFile);
 		printNetwork();
 	}
-
+		
+	public Move getNextMove() {
+		double max = 0;
+		Move m;
+		ArrayList<Move> allMoves;
+		allMoves = b.getAllMoves(pID);
+		
+		for (int i = 0 ; i < allMoves.size() ; i++) {
+			b.performMove(allMoves.get(i), pID);
+			
+		}
+		
+		return null;
+	}
+	
+	public Move getMove() {
+		
+		
+		return null;
+	}
+	
 	public void printNetwork() {
 		String layout = net.layoutToString();
 		String weights = net.weightsToString();
