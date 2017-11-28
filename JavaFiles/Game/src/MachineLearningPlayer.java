@@ -15,15 +15,17 @@
 	 * 		
 	 * 	
 	 */
-	import java.io.File;
-	import java.io.FileNotFoundException;
-	import java.io.PrintWriter;
-	import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-<<<<<<< HEAD
+
 public class MachineLearningPlayer extends Player implements AI_Player {
 	
 	private NeuralNet net;
+	private Board b;
 	private File weightsFile, layoutFile;
 
 	public MachineLearningPlayer(int pID) {
@@ -31,10 +33,31 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	}
 	
 	public void init(Board b, File weightsFile, File layoutFile) {
+		this.b = b;
 		this.weightsFile = weightsFile;
 		this.layoutFile = layoutFile;
 		net = new NeuralNet(b, pID, layoutFile, weightsFile);
 		printNetwork();
+	}
+		
+	public Move getNextMove() {
+		double max = 0;
+		Move m;
+		ArrayList<Move> allMoves;
+		allMoves = b.getAllMoves(pID);
+		
+		for (int i = 0 ; i < allMoves.size() ; i++) {
+			b.performMove(allMoves.get(i), pID);
+			
+		}
+		
+		return null;
+	}
+	
+	public Move getMove() {
+		
+		
+		return null;
 	}
 	
 	public void printNetwork() {
@@ -47,54 +70,16 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-=======
-	public class MachineLearningPlayer extends Player implements AI_Player {
-		
-		
-		private NeuralNet net;
-		private File weightsFile, layoutFile;
-
-		public MachineLearningPlayer( int pID) {
-			super(pID);
->>>>>>> c6be1cd502175c45eec9eab2bc561cbe54ec93e1
 		}
-		
-		public void init(Board b, File weightsFile, File layoutFile) {
-			this.weightsFile = weightsFile;
-			this.layoutFile = layoutFile;
-			net = new NeuralNet(b, pID, layoutFile, weightsFile);
-			printNetwork();
+	
+		try {
+			PrintWriter weightPrinter = new PrintWriter(weightsFile);
+			weightPrinter.write(weights);
+			weightPrinter.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-<<<<<<< HEAD
 	}
+		
 }
-=======
-		
-		public void printNetwork() {
-			String layout = net.layoutToString();
-			String weights = net.weightsToString();
-			try {
-				PrintWriter layoutPrinter = new PrintWriter(layoutFile);
-				layoutPrinter.write(layout);
-				layoutPrinter.close();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {
-				PrintWriter weightPrinter = new PrintWriter(weightsFile);
-				weightPrinter.write(weights);
-				weightPrinter.close();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		}
-		
-		
-		
-	}
->>>>>>> c6be1cd502175c45eec9eab2bc561cbe54ec93e1
