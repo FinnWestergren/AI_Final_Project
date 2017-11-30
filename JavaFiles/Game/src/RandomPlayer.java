@@ -8,7 +8,7 @@ public class RandomPlayer extends Player implements AI_Player {
 	}
 	
 	@Override
-	public Move getMove(Board board) {
+	public Move getMove(BoardFeatures board) {
 		ArrayList<Move> mList = board.getPossibleMoves(pID);
 		double rando = Math.random();
 		if(rando > .5) return mList.get((int) (Math.random() * mList.size()));

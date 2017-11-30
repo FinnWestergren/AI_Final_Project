@@ -62,12 +62,14 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	}
 
 	@Override
-	public Move getMove(Board newBoard) {
+	public Move getMove(BoardFeatures b) {
+
+		Board newBoard = (Board) b;
 		Move aPrime = getNextMove(newBoard);
-		double target = net.getOutput(newBoard);
+		double target = net.getOutput(newBoard) + LEARNINGRATE * newBoard.getBoardValue(pID);
 		net.getOutput(oldBoard);
 		net.updateNetworkWeights(target, LEARNINGRATE);
-		oldBoard = newBoard;
+		oldBoard = newBoard.copy();
 		return aPrime;
 	}
 

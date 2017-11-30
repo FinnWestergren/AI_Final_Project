@@ -68,7 +68,7 @@ public class Main extends PApplet {
 		gameUI = new GameUI(cellSize, boardSize);
 		theBoard = new Board(boardSize);
 		player[1] = new MachineLearningPlayer(1);
-		player[0] = new HumanPlayer(0);
+		player[0] = new RandomPlayer(0);
 		initBoard();
 		initNeuralNet(1);
 

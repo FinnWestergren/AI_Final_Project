@@ -515,4 +515,29 @@ public class Board implements BoardFeatures {
 			return c;
 		}
 	}
+
+	public Board copy() {
+		
+		Board out = new Board(boardSize);
+		out.init(this.toFileString());
+		return out;
+	}
+	
+	public String toFileString() {
+
+		String out = "";
+
+		out += pieceLocation[0].getX() + " " + pieceLocation[0].getY() +" " +wallsLeft[0] +"\n";
+		out += pieceLocation[1].getX() + " " + pieceLocation[1].getY() +" " +wallsLeft[1] +"\n";
+		
+		for (int j = 0; j < boardSize - 1; j++) {
+			for (int i = 0; i < boardSize - 1; i++) {
+				out += junctArray[i][j].getOrientation().toString().substring(0, 1);
+				out += " ";
+			}
+			out += "\n";
+		}
+		return out;
+	}
+
 }
