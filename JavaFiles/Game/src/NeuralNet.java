@@ -37,7 +37,7 @@ public class NeuralNet {
 
 			// initialize NeuralLayers
 			for (int i = 0; i < numLayers; i++) {
-				System.out.println("nodes in layer " + i + ": " + nodesPerLayer[i]);
+				//System.out.println("nodes in layer " + i + ": " + nodesPerLayer[i]);
 				layers.add(new NeuralLayer(nodesPerLayer[i]));
 			}
 			// add feature layer to beginning of hiddenLayers arrayList
@@ -47,7 +47,7 @@ public class NeuralNet {
 			// connect Layers
 			for (int i = layers.size() - 1; i >= 1; i--) {
 				for (Node j : layers.get(i - 1).nodeList) {
-					System.out.println("layer: " + i + " totalSize: " + layers.get(i - 1).nodeList.size());
+					//System.out.println("layer: " + i + " totalSize: " + layers.get(i - 1).nodeList.size());
 					layers.get(i).connectBackward(j);
 				}
 			}
@@ -62,13 +62,13 @@ public class NeuralNet {
 		try {
 			Scanner weightScanner = new Scanner(weightsFile);
 			int layerCount = layers.size();
-			System.out.println("LayerCount: " + layerCount);
+			//System.out.println("LayerCount: " + layerCount);
 			for (int i = 0; i < layerCount; i++) {
 				int layerSize = layers.get(i).size;
 				for (int j = 0; j < layerSize; j++) {
 					int inListSize = layers.get(i).getNode(j).toList.size();
 					for (int k = 0; k < inListSize; k++) {
-						System.out.println("i " + i + " j" + j + " k " + k);
+						//System.out.println("i " + i + " j" + j + " k " + k);
 						String next = weightScanner.next();
 						boolean hardCoded = (next.contains("h"));
 						next.replaceAll("h", "");
@@ -85,7 +85,7 @@ public class NeuralNet {
 				for (int j = 0; j < layerSize; j++) {
 					int inListSize = layers.get(i).getNode(j).toList.size();
 					for (int k = 0; k < inListSize; k++) {
-						layers.get(i).getNode(j).toList.get(k).setWeight(Math.random());
+						layers.get(i).getNode(j).toList.get(k).setWeight(0.5);
 					}
 				}
 			}
@@ -132,6 +132,7 @@ public class NeuralNet {
 				for(Node n: layers.get(l).nodeList) {
 					for(Synapse s: n.toList) {
 						s.updateWeight(alpha);
+						System.out.println(s.getWeight());
 					}
 				}
 			}

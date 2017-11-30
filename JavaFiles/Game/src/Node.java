@@ -4,7 +4,7 @@ public class Node {
 
 	protected ArrayList<Synapse> toList;
 	protected ArrayList<Synapse> fromList;
-	public double lastOutput = 0, lastErrorCalc=0;
+	public double lastOutput = 0.5, lastErrorCalc=0;
 
 	public Node() {
 		toList = new ArrayList<Synapse>();
@@ -58,6 +58,8 @@ public class Node {
 		double errorDeriv;
 		if (toList.isEmpty()) {
 			errorDeriv = (target - lastOutput) * gPrime;
+			System.out.println(gPrime);
+			//System.exit(1);
 		}
 
 		else {

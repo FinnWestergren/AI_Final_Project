@@ -15,7 +15,7 @@ public class NeuralLayer {
 	
 	public void connectBackward(Node prev) {
 		for (int  i = 0; i < size; i ++){
-			System.out.println("Synapse: " + i);
+			//System.out.println("Synapse: " + i);
 			Synapse s = new Synapse(prev, nodeList.get(i), Math.random());
 		}
 	}

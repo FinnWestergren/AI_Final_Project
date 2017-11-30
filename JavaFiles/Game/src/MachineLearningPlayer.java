@@ -28,7 +28,7 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	private Board oldBoard;
 	private File weightsFile, layoutFile;
 	
-	static final double LEARNINGRATE = 0.03;
+	static double LEARNINGRATE = 0.1;
 
 	public MachineLearningPlayer(int pID) {
 		super(pID);
@@ -39,14 +39,14 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 		this.weightsFile = weightsFile;
 		this.layoutFile = layoutFile;
 		net = new NeuralNet(b, pID, layoutFile, weightsFile);
-		printNetwork();
+		//printNetwork();
 	}
 
 	public Move getNextMove(Board b) {
 		double temp, max = -1;
 		Move m = null;
 		ArrayList<Move> allMoves;
-		allMoves = b.getAllMoves(pID);
+		allMoves = b.getPossibleMoves(pID);
 
 		for (int i = 0; i < allMoves.size(); i++) {
 			b.performMove(allMoves.get(i), pID);
@@ -54,6 +54,8 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 			if (temp > max) {
 				max = temp;
 				m = allMoves.get(i);
+				if(b.checkGameOver()) LEARNINGRATE = 0.4;
+				
 			}
 			b.undoMove(allMoves.get(i), pID);
 		}
@@ -63,7 +65,7 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 
 	@Override
 	public Move getMove(BoardFeatures b) {
-
+		LEARNINGRATE = 0.1;
 		Board newBoard = (Board) b;
 		Move aPrime = getNextMove(newBoard);
 		double target = net.getOutput(newBoard) + LEARNINGRATE * newBoard.getBoardValue(pID);
