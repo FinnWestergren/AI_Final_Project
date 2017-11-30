@@ -40,17 +40,22 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	}
 		
 	public Move getNextMove() {
-		double max = 0;
-		Move m;
+		double temp, max = -1;
+		Move m = null;
 		ArrayList<Move> allMoves;
 		allMoves = b.getAllMoves(pID);
 		
 		for (int i = 0 ; i < allMoves.size() ; i++) {
 			b.performMove(allMoves.get(i), pID);
-			
+			temp = net.getOutput(b);
+			if (temp > max) {
+				max = temp;
+				m = allMoves.get(i);
+			}
+			b.undoMove(allMoves.get(i), pID);
 		}
 		
-		return null;
+		return m;
 	}
 	
 	public Move getMove() {

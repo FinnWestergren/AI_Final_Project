@@ -92,13 +92,6 @@ public class NeuralNet {
 		}
 	}
 
-	
-	//I dont know why this thing is sitting here, or if we needed it...
-	/*
-	public void conectLayer(NeuralLayer Next) {
-		for(Node local : nodeList) {
-			connectBackward(local);
-	*/
 
 	public String weightsToString() {
 		String out = "";
