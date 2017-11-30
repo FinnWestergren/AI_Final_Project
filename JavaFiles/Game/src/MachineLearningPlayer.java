@@ -1,3 +1,4 @@
+
 /*
  * Machine Learner Class
  * Implements Neural Net, Node, Synapse, Neural Layer...
@@ -24,28 +25,30 @@ import java.util.Scanner;
 public class MachineLearningPlayer extends Player implements AI_Player {
 
 	private NeuralNet net;
-	private Board b;
+	private Board oldBoard;
 	private File weightsFile, layoutFile;
+	
+	static final double LEARNINGRATE = 0.03;
 
 	public MachineLearningPlayer(int pID) {
 		super(pID);
 	}
 
 	public void init(Board b, File weightsFile, File layoutFile) {
-		this.b = b;
+		this.oldBoard = b;
 		this.weightsFile = weightsFile;
 		this.layoutFile = layoutFile;
 		net = new NeuralNet(b, pID, layoutFile, weightsFile);
 		printNetwork();
 	}
-		
-	public Move getNextMove() {
+
+	public Move getNextMove(Board b) {
 		double temp, max = -1;
 		Move m = null;
 		ArrayList<Move> allMoves;
 		allMoves = b.getAllMoves(pID);
-		
-		for (int i = 0 ; i < allMoves.size() ; i++) {
+
+		for (int i = 0; i < allMoves.size(); i++) {
 			b.performMove(allMoves.get(i), pID);
 			temp = net.getOutput(b);
 			if (temp > max) {
@@ -54,16 +57,20 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 			}
 			b.undoMove(allMoves.get(i), pID);
 		}
-		
+
 		return m;
 	}
-	
-	public Move getMove() {
-		
-		
-		return null;
+
+	@Override
+	public Move getMove(Board newBoard) {
+		Move aPrime = getNextMove(newBoard);
+		double target = net.getOutput(newBoard);
+		net.getOutput(oldBoard);
+		net.updateNetworkWeights(target, LEARNINGRATE);
+		oldBoard = newBoard;
+		return aPrime;
 	}
-	
+
 	public void printNetwork() {
 		String layout = net.layoutToString();
 		String weights = net.weightsToString();

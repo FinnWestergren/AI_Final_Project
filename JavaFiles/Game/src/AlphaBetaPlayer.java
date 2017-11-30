@@ -13,7 +13,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 	Move[] previousMoves = new Move[2];
 
 	@Override
-	public Move getMove(BoardFeatures board) {
+	public Move getMove(Board board) {
 		Move out = null;
 		int max = Integer.MIN_VALUE;
 		int i = 0;
@@ -39,7 +39,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 					clearPrevious();
 					max = v;
 					out = m;
-					
+
 				}
 			}
 			i++;
@@ -49,10 +49,9 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 		return out;
 	}
 
-	public int minValue(BoardFeatures board, int d, int alpha, int beta) {
+	public int minValue(Board board, int d, int alpha, int beta) {
 		int a = alpha;
 		int b = beta;
-
 
 		if (board.checkGameOver() || d == maxDepth)
 			return board.getBoardValue(pID);
@@ -75,7 +74,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 		previousMoves = new Move[2];
 	}
 
-	public int maxValue(BoardFeatures board, int d, int alpha, int beta) {
+	public int maxValue(Board board, int d, int alpha, int beta) {
 
 		int a = alpha;
 		int b = beta;
@@ -100,7 +99,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 		return a;
 	}
 
-	public ArrayList<Move> suggestedMoves(BoardFeatures b, int depth, int p) {
+	public ArrayList<Move> suggestedMoves(Board b, int depth, int p) {
 
 		if (depth == 0 || depth == 1) {
 			return b.getPossibleMoves(p);
