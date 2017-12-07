@@ -5,13 +5,9 @@ public class BiasNode extends Node {
 	public BiasNode() {
 		super();
 		// TODO Auto-generated constructor stub
-	}
-
-	public BiasNode(ArrayList<Synapse> toList, ArrayList<Synapse> fromList) {
-		super(toList, fromList);
-		// TODO Auto-generated constructor stub
 		lastOutput = 1;
 	}
+
 	
 	@Override
 	public double activationFunction() {

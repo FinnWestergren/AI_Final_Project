@@ -28,7 +28,7 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	private Board oldBoard;
 	private File weightsFile, layoutFile;
 	
-	static double LEARNINGRATE = 0.1;
+	static double LEARNINGRATE = 0.03;
 
 	public MachineLearningPlayer(int pID) {
 		super(pID);
@@ -43,32 +43,51 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 	}
 
 	public Move getNextMove(Board b) {
-		double temp, max = -1;
+		double epsilon = 0.1;
+		double max = -1;
 		Move m = null;
 		ArrayList<Move> allMoves;
 		allMoves = b.getPossibleMoves(pID);
+		double rando = Math.random();
+		if(rando < epsilon) {
+		
+			
+			return allMoves.get((int)Math.random() * allMoves.size()); 
+		}
+		
 
 		for (int i = 0; i < allMoves.size(); i++) {
+			
+			
+			
 			b.performMove(allMoves.get(i), pID);
-			temp = net.getOutput(b);
-			if (temp > max) {
+			double temp = net.getOutput(b);
+			//System.out.println(b.toString() + "\n" + temp);
+			if (temp >= max) {
+				
 				max = temp;
 				m = allMoves.get(i);
-				if(b.checkGameOver()) LEARNINGRATE = 0.4;
+				if(b.checkGameOver() && b.getWinner() == pID) {
+					LEARNINGRATE = 0.04;
+					b.undoMove(allMoves.get(i), pID);
+					break;
+				}
 				
 			}
+			
+			
 			b.undoMove(allMoves.get(i), pID);
 		}
-
+		
 		return m;
 	}
 
 	@Override
 	public Move getMove(BoardFeatures b) {
-		LEARNINGRATE = 0.1;
+		LEARNINGRATE = 0.03;
 		Board newBoard = (Board) b;
 		Move aPrime = getNextMove(newBoard);
-		double target = net.getOutput(newBoard) + LEARNINGRATE * newBoard.getBoardValue(pID);
+		double target = net.getOutput(newBoard) + newBoard.getBoardValue(pID);
 		net.getOutput(oldBoard);
 		net.updateNetworkWeights(target, LEARNINGRATE);
 		oldBoard = newBoard.copy();

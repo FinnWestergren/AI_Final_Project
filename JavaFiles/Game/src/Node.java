@@ -11,10 +11,10 @@ public class Node {
 		fromList = new ArrayList<Synapse>();
 	}
 
-	public Node(ArrayList<Synapse> toList, ArrayList<Synapse> fromList) {
-		this.toList = toList;
-		this.fromList = fromList;
-	}
+//	public Node(ArrayList<Synapse> toList, ArrayList<Synapse> fromList) {
+//		this.toList = toList;
+//		this.fromList = fromList;
+//	}
 
 	// feature nodes override activationFuntion
 
@@ -32,6 +32,8 @@ public class Node {
 		functionValue = 1 / (1 + Math.pow(Math.E, -weightedSum));
 
 		lastOutput = functionValue;
+		
+		//System.out.println(weightedSum);
 
 		return functionValue;
 	}
@@ -58,13 +60,15 @@ public class Node {
 		double errorDeriv;
 		if (toList.isEmpty()) {
 			errorDeriv = (target - lastOutput) * gPrime;
-			System.out.println(gPrime);
+			//System.out.println(gPrime);
 			//System.exit(1);
 		}
 
 		else {
 			double outputSum = 0;
-			for (int i = 0; i < fromList.size(); i++) {
+
+			for (int i = 0; i < fromList.size() ; i++) {
+				
 				outputSum += fromList.get(i).getValue();
 			}
 			errorDeriv = (errorSum * outputSum * gPrime);

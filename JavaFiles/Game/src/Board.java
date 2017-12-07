@@ -84,7 +84,7 @@ public class Board implements BoardFeatures {
 				
 				int a = (boardSize - 1) - i - 1;
 				int b = (boardSize - 1) - j - 1;
-				System.out.println(i + " " + a + " count " + count * 4);
+				//System.out.println(i + " " + a + " count " + count * 4);
 
 				allWallMoves.add(new WallMove(i, j, Orientation.HORIZONTAL));
 				allWallMoves.add(new WallMove(i, j, Orientation.VERTICAL));
@@ -102,7 +102,7 @@ public class Board implements BoardFeatures {
 		count = 0;
 		for(int i = boardSize - 2; i >= 0; i --) {
 			for(int j = boardSize - 2; j >= 0; j --) {
-				System.out.println(count);
+				//System.out.println(count);
 				allWallMoves.add(new WallMove(i, j, Orientation.HORIZONTAL));
 				allWallMoves.add(new WallMove(i, j, Orientation.VERTICAL));
 				count ++;
@@ -126,6 +126,7 @@ public class Board implements BoardFeatures {
 
 		} else {
 			gameOver = true;
+			winner = pID;
 		}
 		pieceLocation[pID] = cp;
 	}
@@ -385,6 +386,8 @@ public class Board implements BoardFeatures {
 		int enemyPID = (pID + 1) % 2;
 		int self = -manhattanDistance(pID);
 		int enemy = manhattanDistance(enemyPID) ;
+		
+		if(gameOver && winner == pID) return 25 + enemy + self - 1;
 
 		return enemy + self - 1;
 	}
@@ -538,6 +541,10 @@ public class Board implements BoardFeatures {
 			out += "\n";
 		}
 		return out;
+	}
+
+	public int getWinner() {
+		return winner;
 	}
 
 }

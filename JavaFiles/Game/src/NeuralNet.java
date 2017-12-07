@@ -10,6 +10,7 @@ public class NeuralNet {
 
 	public NeuralNet(Board b, int pID, File layout, File weights) {
 		inputLayer = new FeatureLayer(b, pID);
+		layers.add(inputLayer);
 		constructNetwork(layout);
 		initializeWeightsFromFile(weights);
 	}
@@ -41,19 +42,27 @@ public class NeuralNet {
 				layers.add(new NeuralLayer(nodesPerLayer[i]));
 			}
 			// add feature layer to beginning of hiddenLayers arrayList
-			layers.add(0, inputLayer);
+			
 			layers.add(new NeuralLayer(1)); // outputLayer
-
-			// connect Layers
-			for (int i = layers.size() - 1; i >= 1; i--) {
-				for (Node j : layers.get(i - 1).nodeList) {
-					//System.out.println("layer: " + i + " totalSize: " + layers.get(i - 1).nodeList.size());
-					layers.get(i).connectBackward(j);
-				}
-			}
+			
+			connectGraph();
+			
+			//System.out.println("Size: " + layers.get(layers.size() - 1).nodeList.get(0).fromList.size());
+			//System.exit(0);
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	private void connectGraph() {
+		for(int i = 0; i < layers.size() - 1; i ++) {
+			for(Node a : layers.get(i).nodeList) {
+				for(Node b : layers.get(i + 1).nodeList) {
+					new Synapse(a,b,0.1);
+				}
+			}
 		}
 	}
 
@@ -85,7 +94,7 @@ public class NeuralNet {
 				for (int j = 0; j < layerSize; j++) {
 					int inListSize = layers.get(i).getNode(j).toList.size();
 					for (int k = 0; k < inListSize; k++) {
-						layers.get(i).getNode(j).toList.get(k).setWeight(0.5);
+						layers.get(i).getNode(j).toList.get(k).setWeight(Math.random()  - 0.5 );
 					}
 				}
 			}
@@ -96,7 +105,7 @@ public class NeuralNet {
 	public String weightsToString() {
 		String out = "";
 		int layerCount = layers.size();
-		for (int i = 1; i < layerCount; i++) {
+		for (int i = 0; i < layerCount; i++) {
 			int layerSize = layers.get(i).size;
 			for (int j = 0; j < layerSize; j++) {
 				int inListSize = layers.get(i).getNode(j).toList.size();
@@ -127,12 +136,12 @@ public class NeuralNet {
 
 	public void updateNetworkWeights(double target, double alpha) {
 		double layerError = 0;
-		for (int l = layers.size() - 1; l >= 0; l--) {
+		for (int l = layers.size() - 1; l > 0; l--) {
 			if (l < layers.size() - 1) {
 				for(Node n: layers.get(l).nodeList) {
 					for(Synapse s: n.toList) {
 						s.updateWeight(alpha);
-						System.out.println(s.getWeight());
+						//System.out.println(s.getWeight());
 					}
 				}
 			}

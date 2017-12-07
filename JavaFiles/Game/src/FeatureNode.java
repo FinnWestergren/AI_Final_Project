@@ -21,12 +21,11 @@ public class FeatureNode extends Node {
 	
 	@Override
 	public double activationFunction() {
+		//System.out.println("FEATURE CALL: " + feature );
 		return feature;
+		
 	}
 	
-	@Override
-	public void addFrom(Synapse from) {
-		return;
-	}
+
 	
 }

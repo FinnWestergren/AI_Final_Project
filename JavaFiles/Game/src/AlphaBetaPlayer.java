@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class AlphaBetaPlayer extends Player implements AI_Player {
 
-	int maxDepth = 3;
+	int maxDepth = 0;
 
 	public AlphaBetaPlayer(int pID) {
 		super(pID);
@@ -18,7 +18,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 		int max = Integer.MIN_VALUE;
 		int i = 0;
 		for (Move m : board.getPossibleMoves(pID)) {
-			System.out.println("iteration " + i + "max " + max);
+			//System.out.println("iteration " + i + "max " + max);
 			board.performMove(m, pID);
 			int v = minValue(board, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			board.undoMove(m, pID);
@@ -29,7 +29,7 @@ public class AlphaBetaPlayer extends Player implements AI_Player {
 							max = v;
 							out = m;
 						} else {
-							System.out.println();
+							//System.out.println();
 						}
 					} else {
 						max = v;

@@ -12,7 +12,7 @@ public class Synapse {
 		weight = 0;
 	}
 	
-	public Synapse(Node to, Node from, double weight) {
+	public Synapse(Node from, Node to, double weight) {
 		this.to = to;
 		this.from = from;
 		this.weight = weight;
@@ -30,8 +30,10 @@ public class Synapse {
 	//
 	// this combined with the activation function method end up being recursive
 	public double getValue() {
+		double out = from.activationFunction() * weight;
+		//System.out.println(out);
 		
-		return from.activationFunction() * weight;
+		return out;
 		
 	}
 	
