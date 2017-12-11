@@ -11,7 +11,7 @@ public class BiasNode extends Node {
 	
 	@Override
 	public double activationFunction() {
-		
+		//System.out.println("activated");
 		return 1;
 	}
 	

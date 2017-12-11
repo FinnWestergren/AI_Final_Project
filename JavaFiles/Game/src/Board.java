@@ -387,7 +387,7 @@ public class Board implements BoardFeatures {
 		int self = -manhattanDistance(pID);
 		int enemy = manhattanDistance(enemyPID) ;
 		
-		if(gameOver && winner == pID) return 25 + enemy + self - 1;
+		if(gameOver && winner == pID) return 40 + enemy + self - 1;
 
 		return enemy + self - 1;
 	}
@@ -545,6 +545,15 @@ public class Board implements BoardFeatures {
 
 	public int getWinner() {
 		return winner;
+	}
+
+	public int getPlayerYValue(int pID) {
+		// TODO Auto-generated method stub
+		return pieceLocation[pID].getY();
+	}
+	public int getPlayerXValue(int pID) {
+		// TODO Auto-generated method stub
+		return pieceLocation[pID].getX();
 	}
 
 }

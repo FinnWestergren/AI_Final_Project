@@ -31,12 +31,18 @@ public class Main extends PApplet {
 	public Player[] player = new Player[2];
 	public GameUI gameUI;
 	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize / (boardSize + 1);
-	static final String loadBoard = "WinState.txt";
-	static final String loadBoardPath = "../BoardStrings/" + loadBoard;
-	static final String net = "test3/";
+	static final String[] loadBoard = new String[] { "WinState/" , "1Away/"};
+	public static int currentMap = 0;
+	static  String loadBoardPath = "../BoardStrings/" + loadBoard[currentMap];
+	static final String net = "Finn_1Layer/";
 	static final String netPath = "../Network/" + net;
-	public int currentPlayer = 0;
+	public int currentPlayer = 1;
+	
+	public int turns = 0;
 	public int timer = 10;
+	public int startXLocation = 1;
+	public int winRequirement = 300;
+	int turnLimit = 100;
 
 	static int wins = 0, losses = 0;
 
@@ -47,6 +53,7 @@ public class Main extends PApplet {
 		initGame();
 		update();
 		updateGraphics();
+		frameRate(500);
 	}
 
 	public void draw() {
@@ -63,17 +70,16 @@ public class Main extends PApplet {
 			gameUI.currentPlayer = currentPlayer;
 			gameUI.update(theBoard.toString(), theBoard.pieceLocation[0], theBoard.pieceLocation[1]);
 			//((MachineLearningPlayer) player[1]).printNetwork();
+			turns ++;
 		}
 	}
 
 	public void initGame() {
 		theBoard = new Board(boardSize);
 		player[1] = new MachineLearningPlayer(1);
-		player[0] = new AlphaBetaPlayer(0);
+		player[0] = new RandomPlayer(0);
 		initBoard();
 		initNeuralNet(1);
-		//initNeuralNet(0);
-		frameRate(500);
 
 	}
 
@@ -84,8 +90,10 @@ public class Main extends PApplet {
 	}
 
 	private void initBoard() {
-		File file = new File(loadBoardPath);
-
+		loadBoardPath = "../BoardStrings/" + loadBoard[currentMap];
+		currentPlayer = 1;
+		File file = new File(loadBoardPath + (startXLocation % 9));
+		
 		String fileString = "";
 		Scanner fileScanner;
 		try {
@@ -104,15 +112,29 @@ public class Main extends PApplet {
 	}
 
 	public void update() {
-		((MachineLearningPlayer) player[1]).printNetwork();
+		
 
 		if (theBoard.checkGameOver()) {
-
+			
 			if (theBoard.getWinner() == 1)
 				wins++;
 			else
 				losses++;
 			System.out.println(net + " W: " + wins + " L: " + losses);
+			turns = 0;
+			if(wins % winRequirement == 0) {
+				startXLocation ++;
+				((MachineLearningPlayer) player[1]).printNetwork();
+			}
+			if(wins % (winRequirement * 9) ==0)currentMap =1;
+			//((MachineLearningPlayer) player[1]).manualUpdate(theBoard);
+			initBoard();
+		}
+		
+		if(turns > turnLimit) {
+			turns = 0;
+			System.out.println("Time-Out");
+			
 			initBoard();
 		}
 
