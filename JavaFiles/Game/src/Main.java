@@ -31,9 +31,9 @@ public class Main extends PApplet {
 	public Player[] player = new Player[2];
 	public GameUI gameUI;
 	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize / (boardSize + 1);
-	static final String loadBoard = "WinState.txt";
+	static final String loadBoard = "1AwayEvenState.txt";
 	static final String loadBoardPath = "../BoardStrings/" + loadBoard;
-	static final String net = "test3/";
+	static final String net = "test2/";
 	static final String netPath = "../Network/" + net;
 	public int currentPlayer = 0;
 	public int timer = 10;
@@ -192,7 +192,6 @@ public class Main extends PApplet {
 
 		else {
 			theBoard.performMove(move, currentPlayer);
-
 			currentPlayer = (currentPlayer + 1) % 2;
 			update();
 		}
