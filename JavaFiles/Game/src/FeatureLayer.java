@@ -2,13 +2,13 @@ import java.util.ArrayList;
 
 public class FeatureLayer extends NeuralLayer {
 
-	final static int WALLFEAT = 128, CELLFEAT = 81, WALLSLEFTFEAT = 2, MANHATTANFEAT = 2;
+	final static int WALLFEAT = 128, CELLFEAT = 81, WALLSLEFTFEAT = 2, MANHATTANFEAT = 2, PLAYERFEAT = 4;
 	
 	private int pID;
 	private Board board;
 
 	public FeatureLayer(Board board, int pID) {
-		super(WALLFEAT + CELLFEAT + WALLSLEFTFEAT + MANHATTANFEAT);
+		super(WALLFEAT + CELLFEAT + WALLSLEFTFEAT + MANHATTANFEAT + PLAYERFEAT);
 		
 		
 		this.pID = pID; 
@@ -27,6 +27,7 @@ public class FeatureLayer extends NeuralLayer {
 		updateCellFeatures();
 		updateWallsLeftFeatures();
 		updateManhattanFeatures();
+		updatePlayerFeatures();
 	}
 
 	// sets the first 64 to horizontal, second 64 to vertical
@@ -82,5 +83,14 @@ public class FeatureLayer extends NeuralLayer {
 		((FeatureNode) nodeList.get(index)).setFeature(board.manhattanDistance(pID));
 		((FeatureNode) nodeList.get(index + 1)).setFeature(board.manhattanDistance((pID + 1) % 2));
 	}
+	
+	private void updatePlayerFeatures() {
+		int index = WALLFEAT +CELLFEAT + WALLSLEFTFEAT + MANHATTANFEAT;
+		((FeatureNode) nodeList.get(index)).setFeature(board.getPlayerYValue(pID));
+		((FeatureNode) nodeList.get(index + 1)).setFeature(board.getPlayerYValue((pID + 1) % 2));
+		((FeatureNode) nodeList.get(index)).setFeature(board.getPlayerXValue(pID));
+		((FeatureNode) nodeList.get(index + 1)).setFeature(board.getPlayerXValue((pID + 1) % 2));
+	}
+	
 	
 }
