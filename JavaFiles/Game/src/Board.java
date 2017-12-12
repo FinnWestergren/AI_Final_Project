@@ -384,12 +384,12 @@ public class Board implements BoardFeatures {
 
 
 		int enemyPID = (pID + 1) % 2;
-		int self = -manhattanDistance(pID);
+		int self =  manhattanDistance(pID);
 		int enemy = manhattanDistance(enemyPID) ;
 		
-		if(gameOver && winner == pID) return 40 + enemy + self - 1;
+		if(gameOver && winner == pID) return 100;
 
-		return enemy + self - 1;
+		return enemy - self - 1;
 	}
 
 	// method does a BFS until it finds the goal state

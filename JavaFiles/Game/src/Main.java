@@ -31,10 +31,10 @@ public class Main extends PApplet {
 	public Player[] player = new Player[2];
 	public GameUI gameUI;
 	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize / (boardSize + 1);
-	static final String[] loadBoard = new String[] { "WinState/" , "1Away/"};
+	static final String[] loadBoard = new String[] { "WinState/" , "1Away/","empty_board.txt"};
 	public static int currentMap = 0;
 	static  String loadBoardPath = "../BoardStrings/" + loadBoard[currentMap];
-	static final String net = "Finn_1Layer/";
+	static final String net = "Finn_2Layer2/";
 	static final String netPath = "../Network/" + net;
 	public int currentPlayer = 1;
 	
@@ -44,7 +44,7 @@ public class Main extends PApplet {
 	public int winRequirement = 300;
 	int turnLimit = 100;
 
-	static int wins = 0, losses = 0;
+	static int wins = 1, losses = 0;
 
 	public void setup() {
 		size(windowSize + 2 * margin, windowSize);
@@ -91,8 +91,7 @@ public class Main extends PApplet {
 
 	private void initBoard() {
 		loadBoardPath = "../BoardStrings/" + loadBoard[currentMap];
-		currentPlayer = 1;
-		File file = new File(loadBoardPath + (startXLocation % 9));
+		File file = new File(loadBoardPath + (startXLocation % 9)); // 
 		
 		String fileString = "";
 		Scanner fileScanner;
@@ -126,7 +125,9 @@ public class Main extends PApplet {
 				startXLocation ++;
 				((MachineLearningPlayer) player[1]).printNetwork();
 			}
-			if(wins % (winRequirement * 9) ==0)currentMap =1;
+			
+			if(wins > 18 * winRequirement) currentMap = 1;
+			
 			//((MachineLearningPlayer) player[1]).manualUpdate(theBoard);
 			initBoard();
 		}
