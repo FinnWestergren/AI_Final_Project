@@ -7,7 +7,7 @@ import processing.core.PApplet;
 public class TrainingMain {
 
 	/*
-	 * Sjoerd and Finn Fall 2017 bby!
+	 * Sjoerd and Finn Fall 2017!
 	 *
 	 * This program plays the game Quoridor. The classes are separated in a manner
 	 * that allows the best dynamic sizing, testing, and debugging.
@@ -15,11 +15,8 @@ public class TrainingMain {
 	 * The graphics are all controlled by a single class, GameUI. It is fed a string
 	 * by main from Board.toString
 	 * 
-	 * TODO design alpha beta agent
 	 * 
-	 * TODO make a text game tic tac toe that implements BoardFeatures
 	 * 
-	 * thats a good start
 	 */
 
 	/*
