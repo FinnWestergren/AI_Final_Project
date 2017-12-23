@@ -25,11 +25,11 @@ import java.util.Scanner;
 public class MachineLearningPlayer extends Player implements AI_Player {
 
 	private NeuralNet net;
-	private Board oldBoard;
+	public Board oldBoard;
 	private File weightsFile, layoutFile;
 	public boolean updateOverride = false;
-	
-	static double LEARNINGRATE = 0.07;
+
+	static double LEARNINGRATE = 0.001, EPSILON = 0.2;
 
 	public MachineLearningPlayer(int pID) {
 		super(pID);
@@ -40,57 +40,63 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 		this.weightsFile = weightsFile;
 		this.layoutFile = layoutFile;
 		net = new NeuralNet(b, pID, layoutFile, weightsFile);
-		//printNetwork();
+		// printNetwork();
 	}
 
 	public Move getNextMove(Board b) {
-		double epsilon = 0.05;
+
 		double max = -1;
 		Move m = null;
 		ArrayList<Move> allMoves;
 		allMoves = b.getPossibleMoves(pID);
+		if (allMoves.isEmpty())
+			return null;
 		double rando = Math.random();
-		if(rando < epsilon) {
-		
-			
-			return allMoves.get((int)Math.random() * allMoves.size()); 
-		}
-		
-		
-		for (int i = 0; i < allMoves.size(); i++) {
+		if (rando < EPSILON) {
 
+			if (rando > EPSILON / 2)
+				return allMoves.get((int) (Math.random() * allMoves.size()));
+			return allMoves.get((int) (Math.random() * Math.min(4, allMoves.size())));
+		}
+
+		for (int i = 0; i < allMoves.size(); i++) {
 			b.performMove(allMoves.get(i), pID);
-			if(b.checkGameOver() && b.getWinner() == pID) {
-				
+			if (b.checkGameOver() && b.getWinner() == pID) {
+
 				b.undoMove(allMoves.get(i), pID);
 				return allMoves.get(i);
 			}
-	
+
 			double temp = net.getOutput(b);
-			//System.out.println(b.toString() + "\n" + temp);
+			// System.out.println(b.toString() + "\n" + temp);
 			if (temp >= max) {
-				
+
 				max = temp;
 				m = allMoves.get(i);
-				
-				
+
 			}
-			
-			
+
 			b.undoMove(allMoves.get(i), pID);
 		}
-		
+
 		return m;
 	}
 
 	@Override
 	public Move getMove(BoardFeatures b) {
-		Board newBoard = ((Board) b).copy();
+		Board newBoard = (Board) b;
 		Move aPrime = getNextMove(newBoard);
-		newBoard.performMove(aPrime, pID);
+		if (oldBoard == null || aPrime == null) {
+			oldBoard = newBoard.copy();
+			return aPrime;
+			
+		}
 		double target = net.getOutput(newBoard) + newBoard.getBoardValue(pID);
 		net.getOutput(oldBoard);
-		net.updateNetworkWeights(target, LEARNINGRATE);
+		if (!updateOverride)
+			net.updateNetworkWeights(target, LEARNINGRATE);
+		oldBoard = newBoard.copy();
+		updateOverride = false;
 		return aPrime;
 	}
 
@@ -113,5 +119,11 @@ public class MachineLearningPlayer extends Player implements AI_Player {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void winUpdate(Board newBoard) {
+		double target = net.getOutput(newBoard) + newBoard.getBoardValue(pID);
+		net.getOutput(oldBoard);
+		net.updateNetworkWeights(target, LEARNINGRATE);
 	}
 }

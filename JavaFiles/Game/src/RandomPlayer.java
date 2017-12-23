@@ -9,10 +9,10 @@ public class RandomPlayer extends Player implements AI_Player {
 	
 	@Override
 	public Move getMove(BoardFeatures board) {
-		ArrayList<Move> mList = board.getPossibleMoves(pID);
+		ArrayList<Move> allMoves = board.getPossibleMoves(pID);
 		double rando = Math.random();
-		if(rando > .9) return mList.get((int) (Math.random() * mList.size()));
-		return mList.get((int)(Math.random() * Math.min(4, mList.size())) );
+		if(rando > .9) return allMoves.get((int) (Math.random() * allMoves.size()));
+		return allMoves.get((int)(Math.random() * Math.min(4, allMoves.size())) );
 		
 	}
 

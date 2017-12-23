@@ -7,7 +7,7 @@ public class ToeMain {
 		
 		board = new TicTacToeBoard();
 		board.init();
-		player[0] = new AlphaBetaPlayer(0);
+		player[0] = new AlphaBetaPlayer(0,1);
 		player[1] = new ToeHumanPlayer(1);
 		
 		String out = board.toString();

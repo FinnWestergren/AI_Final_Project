@@ -37,9 +37,9 @@ public class PieceMove extends Move {
 			return Direction.RIGHT;
 		if (from.getX() > step1.getX())
 			return Direction.LEFT;
-		if (from.getY() < step1.getY())
-			return Direction.UP;
 		if (from.getY() > step1.getY())
+			return Direction.UP;
+		if (from.getY() < step1.getY())
 			return Direction.DOWN;
 		return null;
 	}

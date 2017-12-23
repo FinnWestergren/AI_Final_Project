@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import processing.core.PApplet;
 
-public class Main extends PApplet {
+public class TrainingMain {
 
 	/*
 	 * Sjoerd and Finn Fall 2017 bby!
@@ -27,52 +27,45 @@ public class Main extends PApplet {
 	 * player
 	 */
 
-	public Board theBoard;
-	public Player[] player = new Player[2];
+	public static Board theBoard;
+	public static Player[] player = new Player[2];
 	public GameUI gameUI;
 	static final int windowSize = 700, margin = 150, boardSize = 9, cellSize = windowSize / (boardSize + 1);
-	static final String[] loadBoard = new String[] { "WinState/" , "1Away/","empty_board.txt"};
+	static final String[] loadBoard = new String[] { "WinState/", "1Away/", "empty_board.txt" };
 	public static int currentMap = 0;
-	static  String loadBoardPath = "BoardStrings/" + loadBoard[currentMap];
+	static String loadBoardPath = "BoardStrings/";
 	static final String net = "Finn_2Layer4/";
-	static final String netPath = "../Network/" + net;
-	public int currentPlayer = 1;
-	
-	public int turns = 0;
+	static final String netPath = "Network/" + net;
+	public static int currentPlayer = 1;
+	public static final boolean GUI_ON = false;
+
+	public static int turns = 0;
 	public int timer = 10;
-	public int startXLocation = 1;
-	public int winRequirement = 10;
-	int turnLimit = 8;
+	public static int startXLocation = 1;
+	public static int winRequirement = 100;
+	static int turnLimit = 8;
 
 	static int wins = 1, losses = 0;
 
-	public void setup() {
-		size(windowSize + 2 * margin, windowSize);
-		background(255, 155, 111);
-		gameUI = new GameUI(cellSize, boardSize);
-		initGame();
-		update();
-		updateGraphics();
-		frameRate(500);
-	}
-
-	public void draw() {
-
-		fill(255, 155, 111, 255);
-		noStroke();
-		rect(-1, -1, width + 2, height + 1);
-		gameUI.draw(this);
-		noStroke();
-		fill(255 * currentPlayer, 255 * currentPlayer, 255 - (currentPlayer * 255));
-		ellipse(margin + (currentPlayer * (windowSize)) - 0.05f * margin, 10, 15, 15);
-		if (player[currentPlayer] instanceof AI_Player) {
-			performMove(player[currentPlayer].getMove(theBoard));
-			//((MachineLearningPlayer) player[1]).printNetwork();
-			turns ++;
+	public static void main(String[] args) {
+		if (!GUI_ON) {
+			initGame();
+			update();
+			while (true) {
+				if (player[currentPlayer] instanceof AI_Player) {
+					performMove(player[currentPlayer].getMove(theBoard));
+					// ((MachineLearningPlayer) player[1]).printNetwork();
+					turns++;
+				}
+			}
+		} else {
+			PApplet p = new Main();
+			p.main("Main");
 		}
+
 	}
 
-	public void initGame() {
+	public static void initGame() {
 		theBoard = new Board(boardSize);
 		player[1] = new MachineLearningPlayer(1);
 		player[0] = new AlphaBetaPlayer(0, 0);
@@ -81,26 +74,27 @@ public class Main extends PApplet {
 
 	}
 
-	private void initNeuralNet(int pID) {
+	private static void initNeuralNet(int pID) {
 		File layoutFile = new File(netPath + "layout.txt");
 		File weightsFile = new File(netPath + "weights.txt");
 		((MachineLearningPlayer) player[pID]).init(theBoard, weightsFile, layoutFile);
 	}
 
-	private void initBoard() {
-		loadBoardPath = "../BoardStrings/" + loadBoard[currentMap];
-		File file = new File(loadBoardPath + (startXLocation % 9)); // 
-		
+	private static void initBoard() {
+		String b = loadBoardPath + loadBoard[currentMap];
+		if (loadBoard[currentMap].contains("/"))
+			b += startXLocation;
+		File file = new File(b); //
 		String fileString = "";
 		Scanner fileScanner;
 		try {
-
 			fileScanner = new Scanner(file);
 			while (fileScanner.hasNextLine()) {
 				fileString += fileScanner.nextLine() + "\n";
 			}
 			// System.out.println(fileString);
 			theBoard.init(fileString);
+			((MachineLearningPlayer) player[1]).oldBoard = null;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -108,32 +102,32 @@ public class Main extends PApplet {
 
 	}
 
-	public void update() {
-		
+	public static void update() {
 
 		if (theBoard.checkGameOver()) {
-			
+
 			if (theBoard.getWinner() == 1)
 				wins++;
 			else
 				losses++;
 			System.out.println(net + " W: " + wins + " L: " + losses);
 			turns = 0;
-			if(wins % winRequirement == 0) {
-				startXLocation ++;
+			if (wins % winRequirement == 0) {
+				startXLocation = (startXLocation + 1) % (9);
 				((MachineLearningPlayer) player[1]).printNetwork();
 			}
-			
-			if(wins > 18 * winRequirement) currentMap = 1;
-			
+
+			if (wins > 9*3 * winRequirement)
+				currentMap = (currentMap + 1) % 2;
+
 			((MachineLearningPlayer) player[1]).winUpdate(theBoard);
 			initBoard();
 		}
-		
-		if(turns > turnLimit) {
+
+		if (turns > turnLimit) {
 			turns = 0;
 			System.out.println("Time-Out");
-			
+
 			initBoard();
 		}
 
@@ -143,7 +137,7 @@ public class Main extends PApplet {
 		if (!theBoard.checkGameOver()) {
 			gameUI.currentPlayer = currentPlayer;
 			gameUI.update(theBoard.toString(), theBoard.pieceLocation[0], theBoard.pieceLocation[1]);
-			
+
 		}
 	}
 
@@ -155,39 +149,7 @@ public class Main extends PApplet {
 		}
 	}
 
-	public void keyPressed() {
-
-		if (key != CODED)
-			return;
-
-		if (player[currentPlayer] instanceof HumanPlayer) {
-
-			CoordinatePair from = theBoard.pieceLocation[currentPlayer];
-			CoordinatePair to;
-			switch (keyCode) {
-
-			case UP:
-				to = from.getNextCoordinatePairFromDirection(Direction.UP);
-				break;
-			case DOWN:
-				to = from.getNextCoordinatePairFromDirection(Direction.DOWN);
-				break;
-			case LEFT:
-				to = from.getNextCoordinatePairFromDirection(Direction.LEFT);
-				;
-				break;
-			case RIGHT:
-				to = from.getNextCoordinatePairFromDirection(Direction.RIGHT);
-				break;
-			default:
-				return;
-			}
-			performMove(new PieceMove(from, to));
-		}
-
-	}
-
-	private void performMove(Move move) {
+	private static void performMove(Move move) {
 		if (move == null)
 			return;
 		boolean doubleMove = false;
@@ -217,6 +179,6 @@ public class Main extends PApplet {
 			currentPlayer = (currentPlayer + 1) % 2;
 			update();
 		}
-		updateGraphics();
 	}
+
 }

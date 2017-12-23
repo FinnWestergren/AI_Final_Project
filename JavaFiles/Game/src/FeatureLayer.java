@@ -61,13 +61,13 @@ public class FeatureLayer extends NeuralLayer {
 			Cell current = board.cellArray[i % 9][i / 9];
 			int index = i + WALLFEAT;
 			if (current.occupiedBy == pID)
-				((FeatureNode) nodeList.get(index)).setFeature(1);
+				((FeatureNode) nodeList.get(index)).setFeature(10);
 
 			else if (current.occupiedBy == -1)
 				((FeatureNode) nodeList.get(index)).setFeature(0);
 
 			else
-				((FeatureNode) nodeList.get(index)).setFeature(-1);
+				((FeatureNode) nodeList.get(index)).setFeature(-10);
 		}
 	}
 	

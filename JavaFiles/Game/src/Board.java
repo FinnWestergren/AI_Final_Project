@@ -388,6 +388,7 @@ public class Board implements BoardFeatures {
 		int enemy = manhattanDistance(enemyPID) ;
 		
 		if(gameOver && winner == pID) return 100;
+		if(gameOver && winner != pID) return -100;
 
 		return enemy - self - 1;
 	}
